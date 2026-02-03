@@ -1,57 +1,54 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Space_Grotesk, Space_Mono } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
-import { LocaleProvider } from "@/components/providers/locale-provider";
 import { AuthProvider } from "@/components/providers/auth-provider";
-import { Toaster } from "sonner";
 import { ReferrerTracker } from "@/components/referrer-tracker";
-import { Suspense } from "react";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-space-grotesk",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const spaceMono = Space_Mono({
+  variable: "--font-space-mono",
   subsets: ["latin"],
+  weight: ["400", "700"],
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://lumina.net.local"),
-  title: "LuminaNet | Futurystyczny magazyn danych",
+  title: "TraitLens | DNA Trait Reports",
   description:
-    "Futurystyczny landing i dashboard z mock/Firebase auth, udostępnianiem plików i trybem bez konfiguracji.",
-  keywords: ["nextjs", "firebase", "storage", "landing", "dashboard"],
+    "Upload your raw DNA file, normalize SNPs, and explore educational trait reports. Privacy-first and non-medical.",
+  metadataBase: new URL("https://iliarudich0.github.io"),
   openGraph: {
-    title: "LuminaNet | 2100-ready data space",
-    description:
-      "Zaloguj się, wyślij plik, udostępnij publiczny link z kodem polecającym w 30 sekund.",
-    url: "https://lumina.net.local",
-    siteName: "LuminaNet",
+    title: "TraitLens | DNA Trait Reports",
+    description: "Educational trait reports from consumer DNA files.",
+    url: "https://iliarudich0.github.io/dnax",
+    siteName: "TraitLens",
     images: [
       {
-        url: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=80",
+        url: "https://images.unsplash.com/photo-1489278353717-f64c6ee8a4d2?auto=format&fit=crop&w=1400&q=80",
         width: 1400,
         height: 788,
-        alt: "LuminaNet preview",
+        alt: "TraitLens preview",
       },
     ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "LuminaNet",
-    description: "Przyszłościowy landing, dashboard i mock Firebase w 30 sekund.",
+    title: "TraitLens",
+    description: "Educational trait reports from your DNA file.",
     images: [
-      "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1489278353717-f64c6ee8a4d2?auto=format&fit=crop&w=1200&q=80",
     ],
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#10b981",
+  themeColor: "#0a0a0a",
 };
 
 export default function RootLayout({
@@ -60,20 +57,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pl" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
-      >
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${spaceGrotesk.variable} ${spaceMono.variable} bg-background text-foreground antialiased`}>
         <ThemeProvider>
-          <LocaleProvider>
-            <AuthProvider>
-              <Suspense>
-                <ReferrerTracker />
-              </Suspense>
-              {children}
-              <Toaster position="top-right" richColors theme="light" />
-            </AuthProvider>
-          </LocaleProvider>
+          <AuthProvider>
+            <Suspense>
+              <ReferrerTracker />
+            </Suspense>
+            {children}
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

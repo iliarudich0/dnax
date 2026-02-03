@@ -1,60 +1,87 @@
 "use client";
 
-import { useTheme } from "next-themes";
-import { useLocale } from "@/components/providers/locale-provider";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useAuth } from "@/components/providers/auth-provider";
+import { deleteUserData, getSettings, updateSettings } from "@/lib/data";
+import { clearLocalKey } from "@/lib/encryption";
 
 export default function SettingsPage() {
-  const { theme, setTheme } = useTheme();
-  const { locale, setLocale, copy } = useLocale();
+  const { user } = useAuth();
+  const [retentionDays, setRetentionDays] = useState(7);
+  const [encryptionEnabled, setEncryptionEnabled] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    const load = async () => {
+      const settings = await getSettings(user.id);
+      if (settings?.retentionDays) setRetentionDays(settings.retentionDays);
+      if (settings?.encryptionEnabled !== undefined) setEncryptionEnabled(settings.encryptionEnabled);
+    };
+    load();
+  }, [user]);
+
+  const handleSave = async () => {
+    if (!user) return;
+    await updateSettings(user.id, { retentionDays, encryptionEnabled });
+    setMessage("Settings saved.");
+  };
+
+  const handleDelete = async () => {
+    if (!user) return;
+    await deleteUserData(user.id);
+    clearLocalKey();
+    setMessage("All data deleted.");
+  };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <p className="text-sm font-semibold text-emerald-700">{copy.dashboard.settings.title}</p>
-        <p className="text-sm text-muted-foreground">{copy.demo.desc}</p>
-      </div>
-      <Card className="border border-border/70 bg-white/80">
+    <div className="grid gap-6">
+      <Card className="border-border/70 bg-white/90">
         <CardHeader>
-          <CardTitle>{copy.dashboard.settings.theme}</CardTitle>
+          <CardTitle>Data controls</CardTitle>
+          <CardDescription>Configure retention and encryption for raw DNA files.</CardDescription>
         </CardHeader>
-        <CardContent className="flex items-center justify-between">
-          <Label htmlFor="theme">{theme === "light" ? "Light" : "Dark"}</Label>
-          <Switch
-            id="theme"
-            checked={theme !== "light"}
-            onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
-          />
+        <CardContent className="space-y-4">
+          {message && (
+            <Alert>
+              <AlertDescription>{message}</AlertDescription>
+            </Alert>
+          )}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Retention window (days)</label>
+            <Input
+              type="number"
+              min={1}
+              max={30}
+              value={retentionDays}
+              onChange={(event) => setRetentionDays(Number(event.target.value))}
+            />
+            <p className="text-xs text-muted-foreground">Raw DNA files are removed automatically after this period.</p>
+          </div>
+          <div className="flex items-center justify-between rounded-xl border border-border/70 bg-white/80 px-4 py-3">
+            <div>
+              <p className="text-sm font-medium">Encrypt raw files before storage</p>
+              <p className="text-xs text-muted-foreground">Client-side AES-GCM encryption (optional).</p>
+            </div>
+            <Switch checked={encryptionEnabled} onCheckedChange={setEncryptionEnabled} />
+          </div>
+          <Button onClick={handleSave}>Save settings</Button>
         </CardContent>
       </Card>
-      <Card className="border border-border/70 bg-white/80">
+
+      <Card className="border-border/70 bg-white/90">
         <CardHeader>
-          <CardTitle>{copy.dashboard.settings.language}</CardTitle>
-        </CardHeader>
-        <CardContent className="flex items-center justify-between">
-          <Label htmlFor="lang">{locale.toUpperCase()}</Label>
-          <Switch
-            id="lang"
-            checked={locale === "en"}
-            onCheckedChange={(checked) => setLocale(checked ? "en" : "pl")}
-          />
-        </CardContent>
-      </Card>
-      <Card className="border border-border/70 bg-white/80">
-        <CardHeader>
-          <CardTitle>{copy.dashboard.settings.delete}</CardTitle>
+          <CardTitle>Delete my data</CardTitle>
+          <CardDescription>Removes uploads, normalized data, and shares for this account.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Button
-            variant="ghost"
-            className="text-destructive"
-            onClick={() => toast("Stub: konto zostanie usunięte po integracji z Firebase")}
-          >
-            {copy.dashboard.settings.delete}
+          <Button variant="destructive" onClick={handleDelete}>
+            Delete everything
           </Button>
         </CardContent>
       </Card>

@@ -9,7 +9,9 @@ const envSchema = z.object({
   NEXT_PUBLIC_FIREBASE_APP_ID: z.string().optional(),
   NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: z.string().optional(),
   NEXT_PUBLIC_USE_FIREBASE: z.string().optional(),
-  NEXT_PUBLIC_REFERRAL_CODE: z.string().optional(),
+  NEXT_PUBLIC_BASE_PATH: z.string().optional(),
+  NEXT_PUBLIC_RETENTION_DAYS: z.string().optional(),
+  NEXT_PUBLIC_ENABLE_ENCRYPTION: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse({
@@ -22,7 +24,9 @@ const parsed = envSchema.safeParse({
   NEXT_PUBLIC_FIREBASE_APP_ID: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
   NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
   NEXT_PUBLIC_USE_FIREBASE: process.env.NEXT_PUBLIC_USE_FIREBASE,
-  NEXT_PUBLIC_REFERRAL_CODE: process.env.NEXT_PUBLIC_REFERRAL_CODE,
+  NEXT_PUBLIC_BASE_PATH: process.env.NEXT_PUBLIC_BASE_PATH,
+  NEXT_PUBLIC_RETENTION_DAYS: process.env.NEXT_PUBLIC_RETENTION_DAYS,
+  NEXT_PUBLIC_ENABLE_ENCRYPTION: process.env.NEXT_PUBLIC_ENABLE_ENCRYPTION,
 });
 
 if (!parsed.success) {
@@ -32,11 +36,14 @@ if (!parsed.success) {
 export const env = parsed.success ? parsed.data : {};
 
 export const firebaseEnabled = Boolean(
-  env.NEXT_PUBLIC_USE_FIREBASE === "true" ||
-    (env.NEXT_PUBLIC_FIREBASE_API_KEY &&
-      env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN &&
-      env.NEXT_PUBLIC_FIREBASE_PROJECT_ID &&
-      env.NEXT_PUBLIC_FIREBASE_APP_ID)
+  env.NEXT_PUBLIC_USE_FIREBASE === "true" &&
+    env.NEXT_PUBLIC_FIREBASE_API_KEY &&
+    env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN &&
+    env.NEXT_PUBLIC_FIREBASE_PROJECT_ID &&
+    env.NEXT_PUBLIC_FIREBASE_APP_ID
 );
 
 export const mockMode = !firebaseEnabled;
+
+export const retentionDays = Number(env.NEXT_PUBLIC_RETENTION_DAYS ?? "7");
+export const encryptionEnabledByDefault = env.NEXT_PUBLIC_ENABLE_ENCRYPTION === "true";

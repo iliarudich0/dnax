@@ -1,21 +1,59 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { Navbar } from "@/components/layout/navbar";
-import { AuthGuard } from "@/components/dashboard/auth-guard";
-import { Sidebar } from "@/components/dashboard/sidebar";
+import { useAuth } from "@/components/providers/auth-provider";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+
+const navItems = [
+  { href: "/dashboard", label: "Overview" },
+  { href: "/dashboard/uploads", label: "Uploads" },
+  { href: "/dashboard/traits", label: "Traits" },
+  { href: "/dashboard/settings", label: "Settings" },
+];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const { user, loading, signOut } = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/auth");
+    }
+  }, [loading, user, router]);
+
   return (
-    <AuthGuard>
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <div className="container py-8">
-          <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
-            <Sidebar />
-            <div className="glass-panel rounded-3xl bg-white/80 p-6 shadow-soft dark:bg-white/5">
-              {children}
-            </div>
+    <div className="min-h-screen">
+      <Navbar />
+      <div className="container grid gap-8 pb-16 pt-8">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-2">
+            {navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "rounded-full border border-border px-4 py-2 text-sm font-medium",
+                  pathname === item.href ? "bg-foreground text-background" : "bg-white/70"
+                )}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+            <span>{user?.email ?? user?.name}</span>
+            <Button variant="secondary" size="sm" onClick={() => signOut()}>
+              Sign out
+            </Button>
           </div>
         </div>
+        {children}
       </div>
-    </AuthGuard>
+    </div>
   );
 }

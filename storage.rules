@@ -5,9 +5,8 @@ service firebase.storage {
       return request.auth != null;
     }
 
-    match /uploads/{userId}/{allPaths=**} {
-      allow read: if isSignedIn() || resource.metadata.shareable == 'true';
-      allow write, delete: if isSignedIn() && request.auth.uid == userId;
+    match /users/{userId}/{allPaths=**} {
+      allow read, write, delete: if isSignedIn() && request.auth.uid == userId;
     }
   }
 }

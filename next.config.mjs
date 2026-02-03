@@ -1,9 +1,8 @@
-import type { NextConfig } from "next";
-
 const rawBasePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 const basePath = rawBasePath && rawBasePath !== "/" ? rawBasePath.replace(/\/$/, "") : "";
 
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   output: "export",
   trailingSlash: true,
   basePath: basePath || undefined,
@@ -14,10 +13,6 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "images.unsplash.com",
-      },
-      {
-        protocol: "https",
-        hostname: "api.dicebear.com",
       },
     ],
   },

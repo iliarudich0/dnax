@@ -2,34 +2,29 @@
 
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
-import { useLocale } from "@/components/providers/locale-provider";
 
 export function Footer() {
-  const { copy } = useLocale();
   return (
-    <footer className="border-t border-border/80 bg-white/80 py-12 text-sm text-muted-foreground dark:bg-black/50" id="docs">
+    <footer className="border-t border-border/70 bg-white/70 py-10 text-sm text-muted-foreground" id="privacy">
       <div className="container flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
         <div className="flex flex-col gap-2">
-          <div className="text-foreground">LuminaNet</div>
-          <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">
-            {copy.social.note}
+          <div className="text-foreground">TraitLens</div>
+          <p className="max-w-xl text-sm leading-relaxed">
+            TraitLens provides educational trait insights from consumer DNA files. It does not provide medical advice.
           </p>
+          <p className="text-xs">Delete data anytime. Raw files are removed automatically after your retention window.</p>
         </div>
         <div className="flex flex-wrap items-center gap-4">
-          <Link href="#" className="hover:text-foreground">
-            {copy.footer.privacy}
-          </Link>
-          <Separator orientation="vertical" className="hidden h-5 md:block" />
-          <Link href="#" className="hover:text-foreground">
-            {copy.footer.terms}
+          <Link href="/dashboard" className="hover:text-foreground">
+            Dashboard
           </Link>
           <Separator orientation="vertical" className="hidden h-5 md:block" />
           <Link href="/CREDITS.md" className="hover:text-foreground">
-            {copy.footer.credits}
+            Sources
           </Link>
           <Separator orientation="vertical" className="hidden h-5 md:block" />
-          <Link href="mailto:hello@lumina.net" className="hover:text-foreground">
-            {copy.footer.contact}
+          <Link href="#privacy" className="hover:text-foreground">
+            Privacy & disclaimer
           </Link>
         </div>
       </div>

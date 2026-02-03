@@ -1,16 +1,11 @@
-import ShareClient from "./share-client";
-
-export const dynamic = "force-static";
-export const dynamicParams = false;
+import { ShareClient } from "./share-client";
 
 export function generateStaticParams() {
-  return [{ id: "mock-id" }, { id: "nebula" }];
+  return [{ id: "demo" }];
 }
 
-type SharePageProps = {
-  params: { id: string };
-};
+export const dynamicParams = false;
 
-export default function SharePage({ params }: SharePageProps) {
-  return <ShareClient id={params.id} />;
+export default function SharePage({ params }: { params: { id: string } }) {
+  return <ShareClient shareId={params.id} />;
 }

@@ -5,13 +5,34 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    match /users/{userId} {
-      allow read, write: if isSignedIn() && request.auth.uid == userId;
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
     }
 
-    match /uploads/{id} {
-      allow read: if isSignedIn() || (resource.data.shareable == true);
-      allow write, update, delete: if isSignedIn() && request.auth.uid == request.resource.data.userId;
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+
+      match /uploads/{uploadId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /normalized/{uploadId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /traits/{uploadId} {
+        allow read, write: if isOwner(userId);
+      }
+
+      match /settings/{docId} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    match /shares/{shareId} {
+      allow read: if resource.data.enabled == true;
+      allow create: if isSignedIn() && request.auth.uid == request.resource.data.userId;
+      allow update, delete: if isSignedIn() && request.auth.uid == resource.data.userId;
     }
   }
 }

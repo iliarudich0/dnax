@@ -1,88 +1,103 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Copy, ArrowLeft } from "lucide-react";
-import Link from "next/link";
-import Image from "next/image";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useLocale } from "@/components/providers/locale-provider";
-import { useAuth, type AppUpload } from "@/components/providers/auth-provider";
-import { withBasePath } from "@/lib/urls";
-import { toast } from "sonner";
+import { Navbar } from "@/components/layout/navbar";
+import { Footer } from "@/components/layout/footer";
+import { getShare } from "@/lib/data";
+import { ShareRecord } from "@/lib/types";
 
-type ShareClientProps = {
-  id: string;
+const demoShare: ShareRecord = {
+  id: "demo",
+  userId: "demo",
+  uploadId: "demo",
+  createdAt: new Date().toISOString(),
+  enabled: true,
+  headline: "Top trait: Caffeine Metabolism",
+  note: "This is a demo summary with no raw DNA or genotype details.",
+  topTraits: [
+    { traitId: "caffeine-metabolism", name: "Caffeine Metabolism", category: "Lifestyle", outcome: "Fast metabolizer" },
+    { traitId: "lactose-tolerance", name: "Lactose Tolerance", category: "Nutrition", outcome: "Likely lactose tolerant" },
+    { traitId: "eye-color", name: "Eye Color Proxy", category: "Appearance", outcome: "Darker eyes" },
+    { traitId: "bitter-taste", name: "Bitter Taste Sensitivity", category: "Nutrition", outcome: "Medium sensitivity" },
+    { traitId: "muscle-performance", name: "Muscle Performance", category: "Physical", outcome: "Balanced" },
+  ],
 };
 
-export default function ShareClient({ id }: ShareClientProps) {
-  const { copy } = useLocale();
-  const { getUpload } = useAuth();
-  const [upload, setUpload] = useState<AppUpload | null>(null);
+export function ShareClient({ shareId }: { shareId: string }) {
+  const [share, setShare] = useState<ShareRecord | null>(null);
+  const [missing, setMissing] = useState(false);
 
   useEffect(() => {
-    getUpload(id)
-      .then(setUpload)
-      .catch(() => setUpload(null));
-  }, [getUpload, id]);
-
-  const handleCopy = () => {
-    const link = `${window.location.origin}${withBasePath(`/share/${id}`)}`;
-    navigator.clipboard.writeText(link);
-    toast.success(copy.toasts.copied);
-  };
-
-  if (!upload) {
-    return (
-      <div className="min-h-screen bg-background">
-        <div className="container flex min-h-screen flex-col items-center justify-center gap-4">
-          <p className="text-sm text-muted-foreground">{copy.share.notFound}</p>
-          <Link href="/">
-            <Button variant="secondary">
-              <ArrowLeft className="mr-2 h-4 w-4" /> {copy.hero.primaryCta}
-            </Button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  const isImage = upload.type.startsWith("image");
+    if (!shareId) return;
+    const load = async () => {
+      if (shareId === "demo") {
+        setShare(demoShare);
+        return;
+      }
+      const result = await getShare(shareId);
+      if (!result || !result.enabled) {
+        setMissing(true);
+        return;
+      }
+      setShare(result);
+    };
+    load();
+  }, [shareId]);
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container py-12">
-        <Card className="border border-border/70 bg-white/80">
-          <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <CardTitle>{copy.share.title}</CardTitle>
-              <CardDescription>{upload.name}</CardDescription>
+    <div className="min-h-screen">
+      <Navbar />
+      <main className="container grid gap-6 py-16">
+        {missing || !share ? (
+          <Card className="border-border/70 bg-white/90">
+            <CardContent className="py-10 text-center text-sm text-muted-foreground">
+              This share link is not available. Ask the owner to enable sharing.
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid gap-4">
+            <Card className="border-border/70 bg-white/90">
+              <CardHeader>
+                <CardTitle>{share.headline}</CardTitle>
+                <CardDescription>{share.note}</CardDescription>
+              </CardHeader>
+              <CardContent className="flex flex-wrap items-center gap-2">
+                <Badge variant="secondary">Share summary</Badge>
+                <Badge variant="outline">No raw DNA</Badge>
+                <Badge variant="outline">No genotype details</Badge>
+              </CardContent>
+            </Card>
+            <div className="grid gap-3 md:grid-cols-2">
+              {share.topTraits.map((trait) => (
+                <Card key={trait.traitId} className="border-border/70 bg-white/90">
+                  <CardHeader>
+                    <CardTitle className="text-base">{trait.name}</CardTitle>
+                    <CardDescription>{trait.outcome}</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <Badge variant="outline">{trait.category}</Badge>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
-            <Button size="sm" onClick={handleCopy}>
-              <Copy className="mr-2 h-4 w-4" /> {copy.share.copy}
-            </Button>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {isImage ? (
-              <div className="overflow-hidden rounded-3xl border border-border/70">
-                <Image
-                  src={upload.url}
-                  alt={upload.name}
-                  width={1200}
-                  height={800}
-                  className="h-auto w-full object-cover"
-                />
-              </div>
-            ) : (
-              <div className="rounded-2xl bg-muted/60 p-4 text-sm text-muted-foreground">
-                <p>{upload.type}</p>
-                <p>{Math.round(upload.size / 1024)} KB</p>
-              </div>
-            )}
-            <p className="text-sm text-muted-foreground">{upload.description || copy.demo.desc}</p>
-          </CardContent>
-        </Card>
-      </div>
+            <Card className="border-border/70 bg-white/90">
+              <CardContent className="flex flex-wrap items-center justify-between gap-3 py-6">
+                <div>
+                  <p className="text-sm font-medium">Want your own report?</p>
+                  <p className="text-xs text-muted-foreground">Upload your raw DNA file and generate private traits.</p>
+                </div>
+                <Button asChild>
+                  <a href="/auth">Upload DNA</a>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+      </main>
+      <Footer />
     </div>
   );
 }

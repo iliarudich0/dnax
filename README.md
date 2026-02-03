@@ -1,59 +1,65 @@
-## LuminaNet — futurystyczny landing + dashboard
+# TraitLens (Genomelink-like MVP)
 
-Next.js 14 + TypeScript + Tailwind + shadcn/ui + Framer Motion. Polish-first UI with EN toggle, mock Firebase fallback, uploads, public share links, and referral tracking.
+TraitLens is a consumer genetics trait platform. Users upload raw DNA files (23andMe / AncestryDNA / MyHeritage), we normalize SNPs, and generate **educational, non-medical** trait reports. Raw DNA is never public and can be deleted any time.
 
-### Kluczowe funkcje
-- Landing 2100: hero, social proof, value cards, interactive demo, pricing, testimonials, sticky mobile CTA, OG/Twitter meta.
-- Auth: Google + e-mail/hasło. Mock mode działa bez kluczy Firebase. Protected dashboard layout.
-- Dashboard: profil, upload (mock Storage/Firebase), biblioteka z kopiowaniem linku, ustawienia (theme/lang), publiczne `/share/[id]`.
-- Firebase placeholder: gotowe [firestore.rules](firestore.rules) i [storage.rules](storage.rules) z bezpiecznymi domyślnymi ustawieniami.
-- Inżynieria: ESLint, Vitest + Testing Library, strict TS, zod env guard, responsive & a11y.
+> Disclaimer: This app is for education only and does not provide medical advice or diagnosis.
 
-### Stos
-- Next.js 14 (app router), React 19, TypeScript
-- Tailwind 3 + shadcn/ui + Radix, Framer Motion, next-themes
-- Firebase client (auth/firestore/storage) z lokalnym mockiem
-- Vitest + Testing Library
+## Features
+- Raw DNA upload with client-side parsing and normalization.
+- 10+ trait reports with genotype, interpretation, limitations, and sources.
+- Optional Firebase integration (Auth + Firestore + Storage).
+- Mock mode: fully runs locally without Firebase.
+- Privacy-first sharing: public summary only, no raw DNA or genotypes.
+- Retention window for raw files (default 7 days).
+- Optional client-side AES-GCM encryption for raw files.
+- Static export note: in GitHub Pages mode, share links use `/share?id=...` so they work on a static host.
 
-### Szybki start (mock mode)
-1) Wymagania: Node 20+, npm.
-2) Instalacja: `npm install`
-3) Uruchom dev: `npm run dev` → http://localhost:3000 (mock storage/localStorage, bez Firebase).
+## Local run (mock mode)
+1. Install deps:
+   ```bash
+   npm install
+   ```
+2. Run dev server:
+   ```bash
+   npm run dev
+   ```
+3. Open http://localhost:3000
 
-### Konfiguracja Firebase (opcjonalnie)
-1) Skopiuj [.env.example](.env.example) do `.env.local` i uzupełnij klucze Firebase, ustaw `NEXT_PUBLIC_USE_FIREBASE=true`.
-2) Włącz Email/Password + Google Sign-In w konsoli Firebase.
-3) Zdeployuj reguły:
-	- Firestore: `firebase deploy --only firestore:rules` lub emulator `firebase emulators:start --only firestore`
-	- Storage: `firebase deploy --only storage:rules`
-4) Uruchom: `npm run dev` (dashboard użyje prawdziwego Auth/Storage/Firestore).
+Mock mode stores data in localStorage, no Firebase keys required.
 
-### Komendy
-- Dev: `npm run dev`
-- Lint: `npm run lint`
-- Testy: `npm run test`
-- Build produkcyjny: `npm run build`
-- Start produkcyjny: `npm run start`
+## Firebase setup (optional)
+1. Create a Firebase project and enable:
+   - Authentication (Email/Password + Google)
+   - Firestore
+   - Storage
+2. Copy `.env.example` to `.env.local` and fill values.
+3. Deploy rules:
+   ```bash
+   firebase deploy --only firestore:rules,storage:rules
+   ```
+4. Run:
+   ```bash
+   npm run dev
+   ```
 
-### Deploy
-- Vercel: `vercel --prod` (lub przez UI). Projekt jest zero-config.
-- Netlify: `npm run build` i wskaż folder `.next` z serwerem Next (adapter Node / edge wg preferencji).
+### GitHub Pages build
+Set `NEXT_PUBLIC_BASE_PATH=/dnax` in Actions secrets or `.env.production` locally. The workflow already injects it.
 
-### Ważne pliki
-- Landing i układ: [app/page.tsx](app/page.tsx), [app/layout.tsx](app/layout.tsx), [app/globals.css](app/globals.css)
-- Dashboard + auth: [app/dashboard](app/dashboard), [app/auth/page.tsx](app/auth/page.tsx), [app/share/[id]/page.tsx](app/share/[id]/page.tsx)
-- Logika Firebase/mock: [lib/env.ts](lib/env.ts), [lib/firebase.ts](lib/firebase.ts), [lib/mock-store.ts](lib/mock-store.ts), [components/providers/auth-provider.tsx](components/providers/auth-provider.tsx)
-- UI: [components/ui](components/ui)
-- Testy: [__tests__](__tests__), [vitest.config.ts](vitest.config.ts)
+## Privacy & security notes
+- Raw DNA is **never public**.
+- Retention window deletes raw files after the configured number of days.
+- Sharing is **disabled by default** and only exposes a short summary.
+- Client-side encryption is optional and uses AES-GCM with a local key (see Settings).
 
-### Dostępność i wydajność
-- Domyślny motyw jasny, wysoki kontrast, aria-labels na kontrolkach, focus styles.
-- Animacje lekkie (Framer Motion), skeletony, toasty.
-- Remote image domains whitelisted (Unsplash, DiceBear).
+## Env vars
+See `.env.example` for all variables.
 
-### Mock vs Firebase
-- Domyślnie: mock (localStorage) → możesz testować logowanie, upload, share bez kluczy.
-- Produkcja: ustaw `NEXT_PUBLIC_USE_FIREBASE=true` i dodaj klucze; upload zapisuje metadane w kolekcji `uploads` (pole `shareable: true`).
+## Project structure
+- `app/` ? Next.js routes
+- `lib/` ? parsing, traits engine, adapters
+- `components/` ? UI components
+- `firestore.rules` / `storage.rules`
+- `CREDITS.md` ? SNP/trait sources
 
-### Kredyty
-Źródła grafik i ikon w [CREDITS.md](CREDITS.md).
+## Disclaimer
+TraitLens provides educational insights only. It does not diagnose conditions or predict disease risk. Always consult a qualified healthcare professional for medical guidance.
