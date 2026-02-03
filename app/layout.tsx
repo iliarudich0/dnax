@@ -54,7 +54,7 @@ export default function RootLayout({
         <ThemeProvider>
           <LocaleProvider>
             <AuthProvider>
-              <Suspense>
+              <Suspense fallback={null}>
                 <ReferrerTracker />
               </Suspense>
               {children}

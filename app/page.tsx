@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import type { Route } from "next";
+import type { UrlObject } from "url";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowRight, ShieldCheck, Sparkles, Upload, Share2, Gauge, Quote, Play } from "lucide-react";
 
 import { Navbar } from "@/components/layout/navbar";
@@ -14,14 +15,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useLocale } from "@/components/providers/locale-provider";
-import { useAuth } from "@/components/providers/auth-provider";
-import { useReferralCode } from "@/components/providers/auth-provider";
+import { useAuth, useReferralCode } from "@/components/providers/auth-provider";
 import { cn } from "@/lib/utils";
 
 const heroImages = [
   "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1600&q=80",
   "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80",
 ];
+
+const DEMO_SHARE_ROUTE = "/share/mock-id" as Route;
 
 type DemoCard = {
   title: string;
@@ -56,6 +58,9 @@ export default function Home() {
   const { user } = useAuth();
   const referral = useReferralCode();
   const [testimonialIndex, setTestimonialIndex] = useState(0);
+  const shareHref: Route | UrlObject = referral
+    ? { pathname: DEMO_SHARE_ROUTE, query: { ref: encodeURIComponent(referral) } }
+    : DEMO_SHARE_ROUTE;
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -64,12 +69,7 @@ export default function Home() {
     return () => clearInterval(timer);
   }, [copy.testimonials.items.length]);
 
-  const primaryLink: "/dashboard" | "/auth" = user ? "/dashboard" : "/auth";
-  const shareLink = useMemo(
-    () => `/share/mock-id${referral ? `?ref=${referral}` : ""}`,
-    [referral],
-  );
-  const shareRoute = "/share/mock-id" as Route;
+  const primaryLink = user ? "/dashboard" : "/auth";
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -93,7 +93,7 @@ export default function Home() {
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
-                <Link href={shareRoute} prefetch={false}>
+                <Link href={shareHref} prefetch={false}>
                   <Button variant="secondary" size="lg">
                     {copy.hero.secondaryCta}
                   </Button>
