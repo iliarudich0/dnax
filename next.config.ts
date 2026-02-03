@@ -8,9 +8,6 @@ const nextConfig: NextConfig = {
   trailingSlash: true,
   basePath: basePath || undefined,
   assetPrefix: basePath || undefined,
-  experimental: {
-    typedRoutes: true,
-  },
   images: {
     unoptimized: true,
     remotePatterns: [

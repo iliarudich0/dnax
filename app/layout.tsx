@@ -6,6 +6,7 @@ import { LocaleProvider } from "@/components/providers/locale-provider";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { Toaster } from "sonner";
 import { ReferrerTracker } from "@/components/referrer-tracker";
+import { Suspense } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -66,7 +67,9 @@ export default function RootLayout({
         <ThemeProvider>
           <LocaleProvider>
             <AuthProvider>
-              <ReferrerTracker />
+              <Suspense>
+                <ReferrerTracker />
+              </Suspense>
               {children}
               <Toaster position="top-right" richColors theme="light" />
             </AuthProvider>
