@@ -1,0 +1,17 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    match /users/{userId} {
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
+    }
+
+    match /uploads/{id} {
+      allow read: if isSignedIn() || (resource.data.shareable == true);
+      allow write, update, delete: if isSignedIn() && request.auth.uid == request.resource.data.userId;
+    }
+  }
+}

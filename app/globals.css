@@ -1,26 +1,87 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: 210 40% 98%;
+  --foreground: 222.2 47.4% 11.2%;
+  --muted: 210 40% 96%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 47.4% 11.2%;
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 47.4% 11.2%;
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --primary: 164 72% 40%;
+  --primary-foreground: 210 40% 98%;
+  --secondary: 215 27% 92%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+  --accent: 215 20% 95%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --ring: 164 72% 40%;
+  --radius: 1rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.dark {
+  --background: 224 35% 6%;
+  --foreground: 210 40% 98%;
+  --muted: 220 28% 16%;
+  --muted-foreground: 217.9 10.6% 64.9%;
+  --popover: 224 35% 6%;
+  --popover-foreground: 210 40% 98%;
+  --card: 224 35% 7%;
+  --card-foreground: 210 40% 98%;
+  --border: 217 19% 18%;
+  --input: 217 19% 18%;
+  --primary: 164 72% 56%;
+  --primary-foreground: 224 35% 6%;
+  --secondary: 217 22% 14%;
+  --secondary-foreground: 210 40% 98%;
+  --accent: 210 24% 14%;
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 62.8% 55%;
+  --destructive-foreground: 0 0% 98%;
+  --ring: 164 72% 56%;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply min-h-screen bg-background text-foreground antialiased;
+    background-image: radial-gradient(circle at 20% 20%, rgba(16, 185, 129, 0.08), transparent 25%),
+      radial-gradient(circle at 80% 0%, rgba(59, 130, 246, 0.08), transparent 25%),
+      linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(246, 249, 255, 0.92) 40%, rgba(238, 242, 255, 0.95) 100%);
+  }
+
+  ::selection {
+    background: hsl(var(--primary) / 0.2);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .glass-panel {
+    @apply border border-white/50 bg-white/70 backdrop-blur-xl shadow-soft dark:border-white/5 dark:bg-white/5;
+  }
+
+  .hero-grid {
+    background-image: linear-gradient(rgba(255, 255, 255, 0.15) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.15) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  .soft-gradient {
+    background: radial-gradient(circle at 30% 20%, rgba(16, 185, 129, 0.25), transparent 35%),
+      radial-gradient(circle at 85% 30%, rgba(59, 130, 246, 0.18), transparent 30%),
+      radial-gradient(circle at 50% 80%, rgba(14, 165, 233, 0.12), transparent 35%);
+  }
+
+  .neon-border {
+    box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.2), 0 10px 40px -30px rgba(16, 185, 129, 0.6);
+  }
 }

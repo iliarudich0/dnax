@@ -13,6 +13,17 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    files: ["**/*.test.{ts,tsx}", "**/__tests__/**/*.{ts,tsx}"],
+    languageOptions: {
+      globals: {
+        describe: true,
+        it: true,
+        expect: true,
+        vi: true,
+      },
+    },
+  },
 ]);
 
 export default eslintConfig;
