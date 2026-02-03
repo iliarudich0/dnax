@@ -59,7 +59,10 @@ export default function Home() {
   const referral = useReferralCode();
   const [testimonialIndex, setTestimonialIndex] = useState(0);
   const shareHref: Route | UrlObject = referral
-    ? { pathname: DEMO_SHARE_ROUTE, query: { ref: encodeURIComponent(referral) } }
+    ? {
+        pathname: DEMO_SHARE_ROUTE,
+        search: `?ref=${encodeURIComponent(referral)}`,
+      }
     : DEMO_SHARE_ROUTE;
 
   useEffect(() => {
