@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import type { Route } from "next";
 import { Separator } from "@/components/ui/separator";
 import { useLocale } from "@/components/providers/locale-provider";
 
@@ -25,9 +24,9 @@ export function Footer() {
             {copy.footer.terms}
           </Link>
           <Separator orientation="vertical" className="hidden h-5 md:block" />
-          <Link href={"/CREDITS.md" as Route} className="hover:text-foreground" prefetch={false}>
+          <a href="/CREDITS.md" className="hover:text-foreground">
             {copy.footer.credits}
-          </Link>
+          </a>
           <Separator orientation="vertical" className="hidden h-5 md:block" />
           <Link href="mailto:hello@lumina.net" className="hover:text-foreground">
             {copy.footer.contact}

@@ -65,10 +65,11 @@ export default function Home() {
   }, [copy.testimonials.items.length]);
 
   const primaryLink: "/dashboard" | "/auth" = user ? "/dashboard" : "/auth";
-  const shareLink = useMemo<Route>(
-    () => `/share/mock-id${referral ? `?ref=${referral}` : ""}` as Route,
+  const shareLink = useMemo(
+    () => `/share/mock-id${referral ? `?ref=${referral}` : ""}`,
     [referral],
   );
+  const shareRoute = "/share/mock-id" as Route;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -92,7 +93,7 @@ export default function Home() {
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 </Link>
-                <Link href={shareLink}>
+                <Link href={shareRoute} prefetch={false}>
                   <Button variant="secondary" size="lg">
                     {copy.hero.secondaryCta}
                   </Button>
