@@ -13,7 +13,7 @@ export default function DashboardPage() {
     { title: copy.dashboard.uploads.title, desc: copy.dashboard.uploads.subtitle, href: "/dashboard/uploads", icon: UploadCloud },
     { title: copy.dashboard.library.title, desc: copy.dashboard.library.empty, href: "/dashboard/library", icon: Share2 },
     { title: copy.steps.items[2].title, desc: copy.steps.items[2].desc, href: "/share/mock-id", icon: Shield },
-  ];
+  ] as const;
 
   return (
     <div className="space-y-6">

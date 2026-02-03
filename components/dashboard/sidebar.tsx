@@ -14,7 +14,7 @@ const items = [
   { href: "/dashboard/uploads", icon: Upload },
   { href: "/dashboard/library", icon: Library },
   { href: "/dashboard/settings", icon: Settings },
-];
+] as const;
 
 export function Sidebar() {
   const pathname = usePathname();

@@ -1,21 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { LocaleProvider } from "@/components/providers/locale-provider";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { Toaster } from "sonner";
 import { ReferrerTracker } from "@/components/referrer-tracker";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://lumina.net.local"),
@@ -60,13 +50,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pl" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
-      >
+      <body className="antialiased bg-background text-foreground font-sans">
         <ThemeProvider>
           <LocaleProvider>
             <AuthProvider>
-              <ReferrerTracker />
+              <Suspense>
+                <ReferrerTracker />
+              </Suspense>
               {children}
               <Toaster position="top-right" richColors theme="light" />
             </AuthProvider>

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import type { Route } from "next";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
@@ -63,8 +64,11 @@ export default function Home() {
     return () => clearInterval(timer);
   }, [copy.testimonials.items.length]);
 
-  const primaryLink = user ? "/dashboard" : "/auth";
-  const shareLink = useMemo(() => `/share/mock-id${referral ? `?ref=${referral}` : ""}`, [referral]);
+  const primaryLink: "/dashboard" | "/auth" = user ? "/dashboard" : "/auth";
+  const shareLink = useMemo<Route>(
+    () => `/share/mock-id${referral ? `?ref=${referral}` : ""}` as Route,
+    [referral],
+  );
 
   return (
     <div className="min-h-screen bg-background text-foreground">

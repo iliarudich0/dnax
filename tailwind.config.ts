@@ -82,8 +82,8 @@ const config: Config = {
           "linear-gradient(120deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%), radial-gradient(circle at 10% 20%, rgba(79, 70, 229, 0.12), transparent 25%), radial-gradient(circle at 90% 10%, rgba(16, 185, 129, 0.18), transparent 30%)",
       },
       fontFamily: {
-        sans: ["var(--font-geist-sans)", "Inter", "system-ui", "sans-serif"],
-        mono: ["var(--font-geist-mono)", "ui-monospace", "SFMono-Regular"],
+        sans: ["Inter", "system-ui", "sans-serif"],
+        mono: ["ui-monospace", "SFMono-Regular"],
       },
     },
   },
