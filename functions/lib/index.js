@@ -45,7 +45,7 @@ const functions = __importStar(require("firebase-functions/v2"));
 const admin = __importStar(require("firebase-admin"));
 const storage_1 = require("@google-cloud/storage");
 const readline = __importStar(require("readline"));
-const ethnicity_calculator_1 = require("./ethnicity-calculator");
+const gedmatch_style_1 = require("./calculators/gedmatch-style");
 admin.initializeApp();
 const db = admin.firestore();
 const storage = new storage_1.Storage();
@@ -184,13 +184,14 @@ exports.processDNAFile = functions.storage.onObjectFinalized({
         if (totalSnps === 0) {
             functions.logger.warn("No SNPs found in file. File format may be incorrect.");
         }
-        // Calculate ethnicity from SNPs
+        // Calculate ethnicity from SNPs using improved calculator
         functions.logger.info("Calculating ethnicity from SNPs", { totalSnps, sampleSize: snps.length });
-        const ethnicityResult = (0, ethnicity_calculator_1.calculateEthnicity)(snps);
+        const ethnicityResult = (0, gedmatch_style_1.calculateAncestry)(snps);
         functions.logger.info("Ethnicity calculation completed", {
-            ancestry: ethnicityResult.ancestry,
+            populations: ethnicityResult.populations,
             confidence: ethnicityResult.confidence,
-            markersUsed: ethnicityResult.markers_used
+            markersUsed: ethnicityResult.markers_used,
+            calculator: ethnicityResult.name
         });
         // Save results to Firestore (merge with existing data)
         await resultRef.set({
@@ -199,7 +200,14 @@ exports.processDNAFile = functions.storage.onObjectFinalized({
             sampleSnps: snps.slice(0, 100), // Store first 100 for display
             processedAt: new Date().toISOString(),
             fileSize,
-            ethnicity: ethnicityResult,
+            ethnicity: {
+                ancestry: ethnicityResult.populations,
+                confidence: ethnicityResult.confidence,
+                markers_used: ethnicityResult.markers_used,
+                total_markers: ethnicityResult.total_markers,
+                calculator: ethnicityResult.name,
+                description: ethnicityResult.description,
+            },
         }, { merge: true });
         functions.logger.info("DNA file processing completed", {
             userId,

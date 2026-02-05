@@ -3,7 +3,7 @@ import * as admin from "firebase-admin";
 import {Storage} from "@google-cloud/storage";
 import {Readable} from "stream";
 import * as readline from "readline";
-import {calculateEthnicity} from "./ethnicity-calculator";
+import {calculateAncestry} from "./calculators/gedmatch-style";
 
 admin.initializeApp();
 
@@ -165,13 +165,14 @@ export const processDNAFile = functions.storage.onObjectFinalized({
       functions.logger.warn("No SNPs found in file. File format may be incorrect.");
     }
 
-    // Calculate ethnicity from SNPs
+    // Calculate ethnicity from SNPs using improved calculator
     functions.logger.info("Calculating ethnicity from SNPs", {totalSnps, sampleSize: snps.length});
-    const ethnicityResult = calculateEthnicity(snps);
+    const ethnicityResult = calculateAncestry(snps);
     functions.logger.info("Ethnicity calculation completed", {
-      ancestry: ethnicityResult.ancestry,
+      populations: ethnicityResult.populations,
       confidence: ethnicityResult.confidence,
-      markersUsed: ethnicityResult.markers_used
+      markersUsed: ethnicityResult.markers_used,
+      calculator: ethnicityResult.name
     });
 
     // Save results to Firestore (merge with existing data)
@@ -181,7 +182,14 @@ export const processDNAFile = functions.storage.onObjectFinalized({
       sampleSnps: snps.slice(0, 100), // Store first 100 for display
       processedAt: new Date().toISOString(),
       fileSize,
-      ethnicity: ethnicityResult,
+      ethnicity: {
+        ancestry: ethnicityResult.populations,
+        confidence: ethnicityResult.confidence,
+        markers_used: ethnicityResult.markers_used,
+        total_markers: ethnicityResult.total_markers,
+        calculator: ethnicityResult.name,
+        description: ethnicityResult.description,
+      },
     }, {merge: true});
 
     functions.logger.info("DNA file processing completed", {

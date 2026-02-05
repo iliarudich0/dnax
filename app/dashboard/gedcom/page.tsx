@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import Link from "next/link";
 import { useAuth } from "@/components/providers/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -136,12 +137,12 @@ export default function GEDCOMPage() {
           relationships, and can include references to photos and documents.
         </p>
         {uploads.some(u => u.status === "completed") && (
-          <div>
-            <Button asChild variant="outline">
-              <a href="/dashboard/gedcom/tree">
-                <Users className="mr-2 h-4 w-4" />
-                View Family Tree
-              </a>
+          <div className="flex gap-3 justify-center">
+            <Button asChild size="lg" className="animate-pulse">
+              <Link href="/dashboard/gedcom/tree">
+                <Users className="mr-2 h-5 w-5" />
+                📊 View Interactive Family Tree
+              </Link>
             </Button>
           </div>
         )}
