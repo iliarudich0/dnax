@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/components/providers/auth-provider";
-import { db } from "@/lib/firebase/client";
+import { getFirestoreDb } from "@/lib/firebase/client";
 import { collection, query, where, onSnapshot, orderBy } from "firebase/firestore";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -38,6 +38,7 @@ export default function EthnicityPage() {
       return;
     }
 
+    const db = getFirestoreDb();
     if (!db) {
       setLoading(false);
       return;
