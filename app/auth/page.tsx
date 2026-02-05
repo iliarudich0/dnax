@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth, useAuthModeLabel } from "@/components/providers/auth-provider";
 import { Navbar } from "@/components/layout/navbar";
+import { handleRedirectResult } from "@/lib/firebase/auth";
 
 export default function AuthPage() {
   const { signInWithEmail, signUpWithEmail, signInWithGoogle, loading } = useAuth();
@@ -18,6 +19,23 @@ export default function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [checkingRedirect, setCheckingRedirect] = useState(true);
+
+  // Check for redirect result on mount
+  useEffect(() => {
+    handleRedirectResult()
+      .then((user) => {
+        if (user) {
+          router.push("/dashboard");
+        }
+      })
+      .catch((err) => {
+        setError(err instanceof Error ? err.message : "Authentication failed");
+      })
+      .finally(() => {
+        setCheckingRedirect(false);
+      });
+  }, [router]);
 
   const handleSubmit = async () => {
     setError(null);
@@ -37,11 +55,26 @@ export default function AuthPage() {
     setError(null);
     try {
       await signInWithGoogle();
-      router.push("/dashboard");
+      // Will redirect, no need to push to dashboard
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to authenticate");
     }
   };
+
+  if (checkingRedirect) {
+    return (
+      <div className="min-h-screen">
+        <Navbar />
+        <div className="container flex min-h-[calc(100vh-4rem)] items-center justify-center py-16">
+          <Card className="w-full max-w-md border-border/70 bg-white/90">
+            <CardContent className="py-8 text-center">
+              <div className="text-muted-foreground">Checking authentication...</div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
