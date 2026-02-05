@@ -319,7 +319,18 @@ export default function CloudProcessingPage() {
                       </Alert>
                     )}
                     
-                    {result.ethnicity && (result.totalSnps ?? 0) > 0 && (
+                    {(result.ethnicity?.insufficient_markers || (result.ethnicity?.markers_used ?? 0) < 3) && (
+                      <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertDescription>
+                          <strong>Not enough ancestry markers to estimate ethnicity.</strong>
+                          <br />This file is missing key ancestry SNPs, so results would be unreliable.
+                          <br />Upload a different raw file or try again after we expand the marker list.
+                        </AlertDescription>
+                      </Alert>
+                    )}
+
+                    {result.ethnicity && !result.ethnicity?.insufficient_markers && (result.totalSnps ?? 0) > 0 && (
                       <div className="space-y-3">
                         <h4 className="font-semibold text-lg">Ethnicity Estimate</h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -342,6 +353,16 @@ export default function CloudProcessingPage() {
                           <span>Confidence: {result.ethnicity.confidence?.toFixed(1)}%</span>
                           <span>Markers used: {result.ethnicity.markers_used}/{result.ethnicity.total_markers}</span>
                         </div>
+                        {result.ethnicity.description && (
+                          <p className="text-xs text-muted-foreground">
+                            {result.ethnicity.description}
+                          </p>
+                        )}
+                        {result.ethnicity.warning && (
+                          <p className="text-xs text-amber-600">
+                            {result.ethnicity.warning}
+                          </p>
+                        )}
                       </div>
                     )}
 

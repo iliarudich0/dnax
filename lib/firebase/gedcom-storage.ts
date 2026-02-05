@@ -1,6 +1,6 @@
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { getFirestoreDb } from "./client";
-import { doc, setDoc, collection, query, orderBy, getDocs } from "firebase/firestore";
+import { doc, setDoc, collection, query, orderBy, getDocs, where } from "firebase/firestore";
 
 export interface GEDCOMFile {
   id: string;
@@ -107,6 +107,7 @@ export async function getUserGEDCOMFiles(): Promise<GEDCOMFile[]> {
 
   const q = query(
     collection(db, "gedcom_files"),
+    where("userId", "==", user.uid),
     orderBy("uploadedAt", "desc")
   );
 
@@ -115,9 +116,7 @@ export async function getUserGEDCOMFiles(): Promise<GEDCOMFile[]> {
 
   querySnapshot.forEach((doc) => {
     const data = doc.data() as GEDCOMFile;
-    if (data.userId === user.uid) {
-      files.push(data);
-    }
+    files.push(data);
   });
 
   return files;

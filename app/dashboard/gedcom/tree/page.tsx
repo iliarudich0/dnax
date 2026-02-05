@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useAuth } from "@/components/providers/auth-provider";
 import { getUserGEDCOMFiles } from "@/lib/firebase/gedcom-storage";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,6 +20,25 @@ export default function GEDCOMTreePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
+
+  const decodeGedcomText = (buffer: ArrayBuffer) => {
+    const bytes = new Uint8Array(buffer);
+    const hasUtf16LeBom = bytes[0] === 0xff && bytes[1] === 0xfe;
+    const hasUtf16BeBom = bytes[0] === 0xfe && bytes[1] === 0xff;
+    const hasUtf8Bom = bytes[0] === 0xef && bytes[1] === 0xbb && bytes[2] === 0xbf;
+
+    if (hasUtf16LeBom) {
+      return new TextDecoder("utf-16le").decode(buffer);
+    }
+    if (hasUtf16BeBom) {
+      return new TextDecoder("utf-16be").decode(buffer);
+    }
+    if (hasUtf8Bom) {
+      return new TextDecoder("utf-8").decode(buffer);
+    }
+
+    return new TextDecoder("utf-8").decode(buffer);
+  };
 
   useEffect(() => {
     if (!user || !user.id) {
@@ -48,7 +68,8 @@ export default function GEDCOMTreePage() {
     try {
       setError(null);
       const response = await fetch(url);
-      const gedcomText = await response.text();
+      const buffer = await response.arrayBuffer();
+      const gedcomText = decodeGedcomText(buffer);
       const parsed = parseGEDCOM(gedcomText);
       setTreeData(parsed);
     } catch (err) {
@@ -219,7 +240,7 @@ export default function GEDCOMTreePage() {
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
             No GEDCOM files uploaded yet. Upload a GEDCOM file on the{" "}
-            <a href="/dashboard/gedcom" className="text-primary underline">GEDCOM page</a> to view your family tree.
+            <Link href="/dashboard/gedcom" className="text-primary underline">GEDCOM page</Link> to view your family tree.
           </AlertDescription>
         </Alert>
       </div>
@@ -229,6 +250,10 @@ export default function GEDCOMTreePage() {
   const rootIndividuals = treeData?.individuals.filter(
     (person) => !person.familyAsChild
   ) || [];
+
+  const displayIndividuals = rootIndividuals.length > 0
+    ? rootIndividuals
+    : treeData?.individuals.slice(0, 50) || [];
 
   return (
     <div className="container mx-auto py-8 space-y-8">
@@ -318,16 +343,18 @@ export default function GEDCOMTreePage() {
               </Button>
             </div>
 
-            {rootIndividuals.length > 0 ? (
-              <div className="space-y-4">
-                {rootIndividuals.map((person) => renderPerson(person))}
-              </div>
-            ) : (
+            {rootIndividuals.length === 0 && (
               <Alert>
                 <AlertCircle className="h-4 w-4" />
-                <AlertDescription>No root individuals found in this GEDCOM file.</AlertDescription>
+                <AlertDescription>
+                  No root individuals detected. Showing a sample list of people instead.
+                </AlertDescription>
               </Alert>
             )}
+
+            <div className="space-y-4">
+              {displayIndividuals.map((person) => renderPerson(person))}
+            </div>
           </div>
         </div>
       )}

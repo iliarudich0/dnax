@@ -10,6 +10,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.POPULATION_FREQUENCIES = exports.COMPREHENSIVE_AIMS = void 0;
 exports.calculateEurogenes = calculateEurogenes;
 exports.calculateAncestry = calculateAncestry;
+const MIN_MARKERS_FOR_ESTIMATE = 3;
 /**
  * Comprehensive list of ancestry-informative markers (AIMs)
  * Expanded from research papers and commercial DNA testing
@@ -193,6 +194,18 @@ function calculateAncestry(snps) {
         }
     }
     // Convert log-likelihoods to percentages
+    if (markersUsed < MIN_MARKERS_FOR_ESTIMATE) {
+        return {
+            name: "Comprehensive Ancestry",
+            populations,
+            confidence: 0,
+            markers_used: markersUsed,
+            total_markers: Object.keys(exports.POPULATION_FREQUENCIES).length,
+            description: "Multi-population ancestry calculator including Jewish ancestry detection",
+            warning: "Insufficient ancestry markers in file to generate a reliable estimate.",
+            insufficient_markers: true,
+        };
+    }
     let maxScore = Math.max(...Object.values(scores));
     let totalExp = 0;
     for (const pop of Object.keys(populations)) {

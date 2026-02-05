@@ -22,7 +22,11 @@ export interface CalculatorResult {
   markers_used: number;
   total_markers: number;
   description: string;
+  warning?: string;
+  insufficient_markers?: boolean;
 }
+
+const MIN_MARKERS_FOR_ESTIMATE = 3;
 
 /**
  * Comprehensive list of ancestry-informative markers (AIMs)
@@ -232,6 +236,19 @@ export function calculateAncestry(snps: SNP[]): CalculatorResult {
   }
 
   // Convert log-likelihoods to percentages
+  if (markersUsed < MIN_MARKERS_FOR_ESTIMATE) {
+    return {
+      name: "Comprehensive Ancestry",
+      populations,
+      confidence: 0,
+      markers_used: markersUsed,
+      total_markers: Object.keys(POPULATION_FREQUENCIES).length,
+      description: "Multi-population ancestry calculator including Jewish ancestry detection",
+      warning: "Insufficient ancestry markers in file to generate a reliable estimate.",
+      insufficient_markers: true,
+    };
+  }
+
   let maxScore = Math.max(...Object.values(scores));
   let totalExp = 0;
   

@@ -207,6 +207,8 @@ exports.processDNAFile = functions.storage.onObjectFinalized({
                 total_markers: ethnicityResult.total_markers,
                 calculator: ethnicityResult.name,
                 description: ethnicityResult.description,
+                warning: ethnicityResult.warning,
+                insufficient_markers: ethnicityResult.insufficient_markers,
             },
         }, { merge: true });
         functions.logger.info("DNA file processing completed", {
