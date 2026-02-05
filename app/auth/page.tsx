@@ -81,7 +81,7 @@ export default function AuthPage() {
             </Button>
           </CardContent>
           <CardFooter className="flex items-center justify-between text-sm text-muted-foreground">
-            <span>{isSignUp ? "Already have an account?" : "New to TraitLens?"}</span>
+            <span>{isSignUp ? "Already have an account?" : "New to TikDNA?"}</span>
             <button
               type="button"
               className="font-semibold text-foreground"

@@ -24,7 +24,7 @@ export function Navbar() {
         <Link href="/" className="flex items-center gap-3 text-lg font-semibold">
           <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-foreground text-background">TL</span>
           <div className="flex flex-col leading-tight">
-            <span>TraitLens</span>
+            <span>TikDNA</span>
             <span className="text-xs text-muted-foreground">Educational genetics</span>
           </div>
         </Link>

@@ -18,28 +18,28 @@ const spaceMono = Space_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TraitLens | DNA Trait Reports",
+  title: "TikDNA | DNA Trait Reports",
   description:
     "Upload your raw DNA file, normalize SNPs, and explore educational trait reports. Privacy-first and non-medical.",
   metadataBase: new URL("https://iliarudich0.github.io"),
   openGraph: {
-    title: "TraitLens | DNA Trait Reports",
+    title: "TikDNA | DNA Trait Reports",
     description: "Educational trait reports from consumer DNA files.",
     url: "https://iliarudich0.github.io/dnax",
-    siteName: "TraitLens",
+    siteName: "TikDNA",
     images: [
       {
         url: "https://images.unsplash.com/photo-1489278353717-f64c6ee8a4d2?auto=format&fit=crop&w=1400&q=80",
         width: 1400,
         height: 788,
-        alt: "TraitLens preview",
+        alt: "TikDNA preview",
       },
     ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "TraitLens",
+    title: "TikDNA",
     description: "Educational trait reports from your DNA file.",
     images: [
       "https://images.unsplash.com/photo-1489278353717-f64c6ee8a4d2?auto=format&fit=crop&w=1200&q=80",

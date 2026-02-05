@@ -35,7 +35,7 @@ const highlights = [
   },
   {
     title: "Educational only",
-    description: "TraitLens is not a medical device and does not provide diagnosis.",
+    description: "TikDNA is not a medical device and does not provide diagnosis.",
     icon: Shield,
   },
   {
@@ -74,7 +74,7 @@ export default function Home() {
                 Upload raw DNA. Get trait reports you can actually understand.
               </h1>
               <p className="max-w-2xl text-lg text-muted-foreground">
-                TraitLens turns consumer DNA files into clear, non-medical trait summaries. Built for privacy, with
+                TikDNA turns consumer DNA files into clear, non-medical trait summaries. Built for privacy, with
                 easy deletion and transparent limitations.
               </p>
               <div className="flex flex-wrap items-center gap-3">
@@ -171,7 +171,7 @@ export default function Home() {
                 <Shield className="h-4 w-4" /> Privacy & disclaimer
               </div>
               <p className="text-sm text-muted-foreground">
-                TraitLens is for educational purposes only and is not a medical device. Trait reports are based on
+                TikDNA is for educational purposes only and is not a medical device. Trait reports are based on
                 public SNP associations and do not predict disease risk. Always consult a clinician for medical
                 guidance.
               </p>
