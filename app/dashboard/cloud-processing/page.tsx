@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/components/providers/auth-provider";
 import { uploadDNAToCloud } from "@/lib/cloud-upload";
 import { getFirestoreDb } from "@/lib/firebase/client";
-import { collection, query, onSnapshot, orderBy } from "firebase/firestore";
+import { collection, query, onSnapshot } from "firebase/firestore";
 import { firebaseEnabled } from "@/lib/env";
 
 const ALLOWED_EXTENSIONS = [".txt", ".csv"];
@@ -49,19 +49,24 @@ export default function CloudProcessingPage() {
     console.log("Setting up real-time listener for user:", user.id);
 
     const resultsRef = collection(db, "users", user.id, "dna_results");
-    const q = query(resultsRef, orderBy("uploadedAt", "desc"));
-
-    const unsubscribe = onSnapshot(q, 
+    // Don't use orderBy to avoid index issues - sort in memory instead
+    const unsubscribe = onSnapshot(resultsRef, 
       (snapshot) => {
         console.log("Received", snapshot.docs.length, "DNA results");
         const data = snapshot.docs.map((doc) => {
           const docData = doc.data();
-          console.log("Result:", doc.id, "status:", docData.status);
+          console.log("Result:", doc.id, "status:", docData.status, "ethnicity:", docData.ethnicity ? "YES" : "NO");
           return {
             id: doc.id,
             ...docData,
           };
         }) as any[];
+        // Sort by uploadedAt in memory
+        data.sort((a, b) => {
+          const dateA = a.uploadedAt ? new Date(a.uploadedAt).getTime() : 0;
+          const dateB = b.uploadedAt ? new Date(b.uploadedAt).getTime() : 0;
+          return dateB - dateA;
+        });
         setResults(data);
       },
       (error) => {
@@ -301,7 +306,33 @@ export default function CloudProcessingPage() {
                 )}
 
                 {result.status === "completed" && (
-                  <div className="space-y-2">
+                  <div className="space-y-4">
+                    {result.ethnicity && (
+                      <div className="space-y-3">
+                        <h4 className="font-semibold text-lg">Ethnicity Estimate</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {Object.entries(result.ethnicity.ancestry || {}).map(([population, percentage]) => (
+                            <div key={population} className="space-y-1">
+                              <div className="flex justify-between text-sm">
+                                <span className="capitalize">{population.replace('_', ' ')}</span>
+                                <span className="font-semibold">{(percentage as number).toFixed(1)}%</span>
+                              </div>
+                              <div className="h-2 w-full bg-secondary rounded-full overflow-hidden">
+                                <div
+                                  className="h-full bg-primary transition-all duration-500"
+                                  style={{ width: `${percentage}%` }}
+                                />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="flex justify-between text-sm text-muted-foreground pt-2 border-t">
+                          <span>Confidence: {result.ethnicity.confidence?.toFixed(1)}%</span>
+                          <span>Markers used: {result.ethnicity.markers_used}/{result.ethnicity.total_markers}</span>
+                        </div>
+                      </div>
+                    )}
+
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
                         <span className="text-muted-foreground">Total SNPs:</span>

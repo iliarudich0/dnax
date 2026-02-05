@@ -176,11 +176,23 @@ export function calculateEthnicity(snps: SNP[]): EthnicityResult {
     totalExp += exp;
   });
 
-  // Normalize to percentages
+  // Normalize to percentages and ensure they sum to 100%
   const ancestry: { [pop: string]: number } = {};
+  let totalPercentage = 0;
+
   POPULATIONS.forEach(pop => {
-    ancestry[pop] = (expScores[pop] / totalExp) * 100;
+    const percentage = (expScores[pop] / totalExp) * 100;
+    ancestry[pop] = percentage;
+    totalPercentage += percentage;
   });
+
+  // Ensure percentages sum to exactly 100% due to floating point precision
+  if (Math.abs(totalPercentage - 100) > 0.01) {
+    const adjustment = (100 - totalPercentage) / POPULATIONS.length;
+    POPULATIONS.forEach(pop => {
+      ancestry[pop] += adjustment;
+    });
+  }
 
   // Calculate confidence based on markers used
   const confidence = Math.min(100, (markersUsed / Object.keys(ANCESTRY_MARKERS).length) * 100);

@@ -71,15 +71,14 @@ exports.processDNAFile = functions.storage.onObjectFinalized({
     const fileName = pathParts[pathParts.length - 1];
     const fileId = fileName.split(".")[0]; // Use filename without extension as ID
     functions.logger.info("Processing DNA file", { userId, fileName, fileId, filePath });
-    // Create initial status document
+    // Reference to the existing document (created by upload)
     const resultRef = db.collection("users").doc(userId).collection("dna_results").doc(fileId);
     try {
+        // Update status to processing (don't overwrite, merge with existing data)
         await resultRef.set({
             status: "processing",
-            fileName,
-            processedAt: admin.firestore.FieldValue.serverTimestamp(),
             uploadPath: filePath,
-        });
+        }, { merge: true });
         // Stream and parse the file
         const bucket = storage.bucket(bucketName);
         const file = bucket.file(filePath);
@@ -93,7 +92,7 @@ exports.processDNAFile = functions.storage.onObjectFinalized({
         const snps = [];
         let totalSnps = 0;
         let lineCount = 0;
-        const maxSampleSnps = 100; // Store first 100 SNPs as sample
+        const maxSampleSnps = 1000; // Store more SNPs for better ethnicity calculation
         let isCSV = fileName.toLowerCase().endsWith(".csv");
         try {
             for (var _d = true, rl_1 = __asyncValues(rl), rl_1_1; rl_1_1 = await rl_1.next(), _a = rl_1_1.done, !_a; _d = true) {
@@ -143,19 +142,22 @@ exports.processDNAFile = functions.storage.onObjectFinalized({
             finally { if (e_1) throw e_1.error; }
         }
         // Calculate ethnicity from SNPs
-        functions.logger.info("Calculating ethnicity from SNPs", { totalSnps });
+        functions.logger.info("Calculating ethnicity from SNPs", { totalSnps, sampleSize: snps.length });
         const ethnicityResult = (0, ethnicity_calculator_1.calculateEthnicity)(snps);
-        functions.logger.info("Ethnicity calculation completed", ethnicityResult);
-        // Save results to Firestore
-        const result = {
+        functions.logger.info("Ethnicity calculation completed", {
+            ancestry: ethnicityResult.ancestry,
+            confidence: ethnicityResult.confidence,
+            markersUsed: ethnicityResult.markers_used
+        });
+        // Save results to Firestore (merge with existing data)
+        await resultRef.set({
+            status: "completed",
             totalSnps,
-            sampleSnps: snps,
+            sampleSnps: snps.slice(0, 100), // Store first 100 for display
             processedAt: new Date().toISOString(),
             fileSize,
-            fileName,
-            status: "completed",
-        };
-        await resultRef.update(Object.assign(Object.assign({}, result), { ethnicity: ethnicityResult }));
+            ethnicity: ethnicityResult,
+        }, { merge: true });
         functions.logger.info("DNA file processing completed", {
             userId,
             fileId,
@@ -166,11 +168,11 @@ exports.processDNAFile = functions.storage.onObjectFinalized({
     }
     catch (error) {
         functions.logger.error("Error processing DNA file", error);
-        await resultRef.update({
+        await resultRef.set({
             status: "failed",
             error: error instanceof Error ? error.message : "Unknown error",
-            processedAt: admin.firestore.FieldValue.serverTimestamp(),
-        });
+            processedAt: new Date().toISOString(),
+        }, { merge: true });
         throw error;
     }
 });
