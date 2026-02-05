@@ -1,8 +1,16 @@
-TikDNA
+# TikDNA
+
+**Proprietary Software - All Rights Reserved**
 
 TikDNA is a consumer genetics trait platform. Users upload raw DNA files (23andMe / AncestryDNA / MyHeritage), we normalize SNPs, and generate **educational, non-medical** trait reports. Raw DNA is never public and can be deleted any time.
 
-> Disclaimer: This app is for education only and does not provide medical advice or diagnosis.
+> **Copyright © 2026 TikDNA. All Rights Reserved.**
+> 
+> This repository is publicly visible for transparency purposes only. The source code is proprietary and may not be copied, modified, distributed, or used for any purpose without explicit written permission from TikDNA.
+> 
+> See [LICENSE](LICENSE) for full terms.
+
+> **Disclaimer:** This app is for education only and does not provide medical advice or diagnosis.
 
 ## Features
 - Raw DNA upload with client-side parsing and normalization.
@@ -62,4 +70,14 @@ See `.env.example` for all variables.
 - `CREDITS.md` ? SNP/trait sources
 
 ## Disclaimer
-TraitLens provides educational insights only. It does not diagnose conditions or predict disease risk. Always consult a qualified healthcare professional for medical guidance.
+TikDNA provides educational insights only. It does not diagnose conditions or predict disease risk. Always consult a qualified healthcare professional for medical guidance.
+
+---
+
+## License
+
+**Proprietary Software - All Rights Reserved**
+
+Copyright © 2026 TikDNA. This software is proprietary and confidential. Unauthorized copying, modification, distribution, or use is strictly prohibited. The source code is publicly visible for transparency only.
+
+For licensing inquiries: matmiluxai@gmail.com
