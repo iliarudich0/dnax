@@ -3,7 +3,8 @@ import {
   onAuthStateChanged as firebaseOnAuthStateChanged,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   GoogleAuthProvider,
   signOut as firebaseSignOut,
 } from "firebase/auth";
@@ -55,8 +56,16 @@ export async function signInWithGoogle() {
   if (!app) throw new Error("Firebase not configured");
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
-  const result = await signInWithPopup(auth, provider);
-  return toUserProfile(result.user);
+  await signInWithRedirect(auth, provider);
+  // User will be redirected, no return needed
+}
+
+export async function handleRedirectResult() {
+  const app = getFirebaseApp();
+  if (!app) return null;
+  const auth = getAuth(app);
+  const result = await getRedirectResult(auth);
+  return result?.user ? toUserProfile(result.user) : null;
 }
 
 export async function signOut() {
