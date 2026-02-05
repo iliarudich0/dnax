@@ -148,6 +148,14 @@ export default function GEDCOMPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          <Alert>
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              <strong>Note:</strong> GEDCOM files (.ged) contain genealogical data like family trees.
+              For DNA raw data files (.txt, .csv), please use the <a href="/dashboard/uploads" className="text-primary underline">Uploads page</a> instead.
+            </AlertDescription>
+          </Alert>
+
           {error && (
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />

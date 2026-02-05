@@ -20,12 +20,7 @@ export async function uploadGEDCOMFile(
   onProgress?: (progress: number) => void
 ): Promise<GEDCOMFile> {
   const storage = getStorage();
-  const db = getFirestoreDb();
-
-  if (!db) {
-    throw new Error("Database not initialized");
-  }
-
+  
   // Get current user
   const { getAuth } = await import("firebase/auth");
   const auth = getAuth();
@@ -77,12 +72,18 @@ export async function uploadGEDCOMFile(
             status: "uploaded",
           };
 
-          // Save to Firestore
+          // Initialize Firestore and save metadata
+          const db = getFirestoreDb();
+          if (!db) {
+            throw new Error("Database not available. Please refresh the page and try again.");
+          }
+          
           await setDoc(doc(db, "gedcom_files", uploadId), gedcomFile);
 
           resolve(gedcomFile);
         } catch (error) {
-          reject(new Error("Failed to save file metadata"));
+          const errorMsg = error instanceof Error ? error.message : "Failed to save file metadata";
+          reject(new Error(errorMsg));
         }
       }
     );
