@@ -13,6 +13,7 @@ const navItems = [
   { href: "/dashboard/uploads", label: "Uploads" },
   { href: "/dashboard/ethnicity", label: "Ethnicity" },
   { href: "/dashboard/traits", label: "Traits" },
+  { href: "/dashboard/gedcom", label: "GEDCOM" },
   { href: "/dashboard/settings", label: "Settings" },
 ];
 
