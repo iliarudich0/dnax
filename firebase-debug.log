@@ -1,0 +1,87 @@
+[debug] [2026-02-05T10:47:46.754Z] ----------------------------------------------------------------------
+[debug] [2026-02-05T10:47:46.756Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\user\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init functions --project dnax-matmiluxai-2026
+[debug] [2026-02-05T10:47:46.757Z] CLI Version:   15.5.1
+[debug] [2026-02-05T10:47:46.757Z] Platform:      win32
+[debug] [2026-02-05T10:47:46.757Z] Node Version:  v24.12.0
+[debug] [2026-02-05T10:47:46.757Z] Time:          Thu Feb 05 2026 11:47:46 GMT+0100 (czas środkowoeuropejski standardowy)
+[debug] [2026-02-05T10:47:46.758Z] ----------------------------------------------------------------------
+[debug] 
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\user\StudioProjects\dnax
+
+Before we get started, keep in mind:
+
+  * You are initializing within an existing Firebase project directory
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] 
+[debug] [2026-02-05T10:49:19.294Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-05T10:49:19.294Z] > authorizing via signed-in user (matmiluxai@gmail.com)
+[debug] [2026-02-05T10:49:19.296Z] Checked if tokens are valid: true, expires at: 1770291237572
+[debug] [2026-02-05T10:49:19.296Z] Checked if tokens are valid: true, expires at: 1770291237572
+[debug] [2026-02-05T10:49:19.297Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/dnax-matmiluxai-2026 [none]
+[debug] [2026-02-05T10:49:19.757Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/dnax-matmiluxai-2026 200
+[debug] [2026-02-05T10:49:19.757Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/dnax-matmiluxai-2026 {"projectId":"dnax-matmiluxai-2026","projectNumber":"193259852525","displayName":"DnaX","name":"projects/dnax-matmiluxai-2026","resources":{"hostingSite":"dnax-matmiluxai-2026"},"state":"ACTIVE","etag":"1_846186a5-2264-4b8d-8c6e-b896871508d8"}
+[info] i  Using project dnax-matmiluxai-2026 (DnaX) . 
+[info] 
+=== Functions Setup
+[debug] [2026-02-05T10:49:19.783Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-05T10:49:19.783Z] > authorizing via signed-in user (matmiluxai@gmail.com)
+[debug] [2026-02-05T10:49:19.783Z] [iam] checking project dnax-matmiluxai-2026 for permissions ["firebase.projects.get"]
+[debug] [2026-02-05T10:49:19.784Z] Checked if tokens are valid: true, expires at: 1770291237572
+[debug] [2026-02-05T10:49:19.784Z] Checked if tokens are valid: true, expires at: 1770291237572
+[debug] [2026-02-05T10:49:19.784Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/dnax-matmiluxai-2026:testIamPermissions [none]
+[debug] [2026-02-05T10:49:19.784Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/dnax-matmiluxai-2026:testIamPermissions  x-goog-user-project=dnax-matmiluxai-2026
+[debug] [2026-02-05T10:49:19.784Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/dnax-matmiluxai-2026:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2026-02-05T10:49:20.625Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/dnax-matmiluxai-2026:testIamPermissions 200
+[debug] [2026-02-05T10:49:20.626Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/dnax-matmiluxai-2026:testIamPermissions {"permissions":["firebase.projects.get"]}
+[debug] [2026-02-05T10:49:20.626Z] Checked if tokens are valid: true, expires at: 1770291237572
+[debug] [2026-02-05T10:49:20.626Z] Checked if tokens are valid: true, expires at: 1770291237572
+[debug] [2026-02-05T10:49:20.627Z] Checked if tokens are valid: true, expires at: 1770291237572
+[debug] [2026-02-05T10:49:20.627Z] Checked if tokens are valid: true, expires at: 1770291237572
+[debug] [2026-02-05T10:49:20.627Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/dnax-matmiluxai-2026/services/cloudfunctions.googleapis.com [none]
+[debug] [2026-02-05T10:49:20.627Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/dnax-matmiluxai-2026/services/cloudfunctions.googleapis.com  x-goog-user-project=dnax-matmiluxai-2026
+[debug] [2026-02-05T10:49:20.629Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/dnax-matmiluxai-2026/services/runtimeconfig.googleapis.com [none]
+[debug] [2026-02-05T10:49:20.629Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/dnax-matmiluxai-2026/services/runtimeconfig.googleapis.com  x-goog-user-project=dnax-matmiluxai-2026
+[debug] [2026-02-05T10:49:21.570Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/dnax-matmiluxai-2026/services/runtimeconfig.googleapis.com 200
+[debug] [2026-02-05T10:49:21.571Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/dnax-matmiluxai-2026/services/runtimeconfig.googleapis.com [omitted]
+[debug] [2026-02-05T10:49:21.581Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/dnax-matmiluxai-2026/services/cloudfunctions.googleapis.com 200
+[debug] [2026-02-05T10:49:21.581Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/dnax-matmiluxai-2026/services/cloudfunctions.googleapis.com [omitted]
+[debug] [2026-02-05T10:49:21.582Z] Checked if tokens are valid: true, expires at: 1770291237572
+[debug] [2026-02-05T10:49:21.582Z] Checked if tokens are valid: true, expires at: 1770291237572
+[debug] [2026-02-05T10:49:21.582Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1/projects/dnax-matmiluxai-2026/services/cloudfunctions.googleapis.com:enable [none]
+[debug] [2026-02-05T10:49:21.582Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1/projects/dnax-matmiluxai-2026/services/cloudfunctions.googleapis.com:enable  x-goog-user-project=dnax-matmiluxai-2026
+[debug] [2026-02-05T10:49:22.645Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1/projects/dnax-matmiluxai-2026/services/cloudfunctions.googleapis.com:enable 200
+[debug] [2026-02-05T10:49:22.645Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1/projects/dnax-matmiluxai-2026/services/cloudfunctions.googleapis.com:enable [omitted]
+[info] Let's create a new codebase for your functions.
+[info] A directory corresponding to the codebase will be created in your project
+[info] with sample code pre-configured.
+
+[info] See https://firebase.google.com/docs/functions/organize-functions for
+[info] more information on organizing your functions using codebases.
+
+[info] Functions can be deployed with firebase deploy.
+
+[info] +  Wrote functions/requirements.txt 
+[info] +  Wrote functions/.gitignore 
+[info] +  Wrote functions/main.py 
+[debug] [2026-02-05T10:50:14.860Z] Running command with virtualenv: command="C:\Users\user\StudioProjects\dnax\functions\venv\Scripts\activate.bat", args=["","&&","pip3","install","--upgrade","pip"]
+[debug] [2026-02-05T10:50:18.229Z] Error: spawn "C:\Users\user\StudioProjects\dnax\functions\venv\Scripts\activate.bat" ENOENT
+    at notFoundError (C:\Users\user\AppData\Roaming\npm\node_modules\firebase-tools\node_modules\cross-spawn\lib\enoent.js:6:26)
+    at verifyENOENT (C:\Users\user\AppData\Roaming\npm\node_modules\firebase-tools\node_modules\cross-spawn\lib\enoent.js:40:16)
+    at cp.emit (C:\Users\user\AppData\Roaming\npm\node_modules\firebase-tools\node_modules\cross-spawn\lib\enoent.js:27:25)
+    at ChildProcess._handle.onexit (node:internal/child_process:294:12)
+[error] 
+[error] Error: An unexpected error has occurred.
