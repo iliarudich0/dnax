@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { href: "#how-it-works", label: "How it works" },
   { href: "#privacy", label: "Privacy" },
-  { href: "#traits", label: "Traits" },
+  { href: "/dashboard/ethnicity", label: "Ethnicity" },
 ];
 
 export function Navbar() {
