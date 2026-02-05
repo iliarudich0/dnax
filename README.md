@@ -1,6 +1,6 @@
-# TraitLens (Genomelink-like MVP)
+TikDNA
 
-TraitLens is a consumer genetics trait platform. Users upload raw DNA files (23andMe / AncestryDNA / MyHeritage), we normalize SNPs, and generate **educational, non-medical** trait reports. Raw DNA is never public and can be deleted any time.
+TikDNA is a consumer genetics trait platform. Users upload raw DNA files (23andMe / AncestryDNA / MyHeritage), we normalize SNPs, and generate **educational, non-medical** trait reports. Raw DNA is never public and can be deleted any time.
 
 > Disclaimer: This app is for education only and does not provide medical advice or diagnosis.
 
