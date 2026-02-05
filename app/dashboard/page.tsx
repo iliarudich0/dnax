@@ -92,6 +92,22 @@ export default function DashboardOverview() {
 
   return (
     <div className="grid gap-6">
+      {/* Multi-User Platform Notice */}
+      <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10">
+        <CardContent className="py-4">
+          <div className="flex items-start gap-3">
+            <Badge variant="outline" className="mt-0.5">🔒 Private</Badge>
+            <div>
+              <p className="text-sm font-medium">Your Personal Genetic Profile</p>
+              <p className="text-xs text-muted-foreground">
+                All data shown here is private to your account (<strong>{user?.email}</strong>). 
+                Other users cannot see your DNA results, ethnicity estimates, or family trees.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold">Welcome back</h1>
