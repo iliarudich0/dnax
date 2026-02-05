@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/dashboard", label: "Overview" },
-  { href: "/dashboard/uploads", label: "Uploads" },
+  { href: "/dashboard/cloud-processing", label: "DNA Upload" },
   { href: "/dashboard/ethnicity", label: "Ethnicity" },
   { href: "/dashboard/traits", label: "Traits" },
   { href: "/dashboard/gedcom", label: "GEDCOM" },

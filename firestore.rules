@@ -35,6 +35,12 @@ service cloud.firestore {
       }
     }
 
+    // GEDCOM files - genealogical data uploads
+    match /gedcom_files/{fileId} {
+      allow read, write, delete: if isSignedIn() && request.auth.uid == resource.data.userId;
+      allow create: if isSignedIn() && request.auth.uid == request.resource.data.userId;
+    }
+
     match /shares/{shareId} {
       allow read: if resource.data.enabled == true;
       allow create: if isSignedIn() && request.auth.uid == request.resource.data.userId;

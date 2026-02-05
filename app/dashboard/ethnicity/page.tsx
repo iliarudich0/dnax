@@ -87,14 +87,38 @@ export default function EthnicityPage() {
 
   if (!latestResult || !latestResult.ethnicity) {
     return (
-      <div className="container mx-auto py-8">
+      <div className="container mx-auto py-8 space-y-6">
         <h1 className="text-3xl font-bold mb-6">Ethnicity Estimate</h1>
         <Alert>
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            No ethnicity data available yet. Upload a DNA file to see your ancestry breakdown.
+            No ethnicity data available yet. Upload a DNA file on the <a href="/dashboard/uploads" className="text-primary underline">Uploads page</a> to see your ancestry breakdown.
           </AlertDescription>
         </Alert>
+        
+        {results.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Debug Info</CardTitle>
+              <CardDescription>Your DNA processing results</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <p className="text-sm"><strong>Total results:</strong> {results.length}</p>
+                {results.map((r) => (
+                  <div key={r.id} className="border-l-2 border-primary pl-3 text-sm">
+                    <p><strong>File:</strong> {r.fileName || "Unknown"}</p>
+                    <p><strong>Status:</strong> {r.status}</p>
+                    <p><strong>Has ethnicity data:</strong> {r.ethnicity ? "Yes" : "No"}</p>
+                    {r.ethnicity && (
+                      <p><strong>Markers used:</strong> {r.ethnicity.markers_used} / {r.ethnicity.total_markers}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     );
   }

@@ -8,30 +8,50 @@ import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/components/providers/auth-provider";
-import { uploadDNAFile } from "@/lib/firebase/dna-storage";
-import { onDNAProcessingResults, DNAProcessingResult } from "@/lib/firebase/dna-processing";
+import { uploadDNAToCloud } from "@/lib/cloud-upload";
+import { getFirestoreDb } from "@/lib/firebase/client";
+import { collection, query, onSnapshot, orderBy } from "firebase/firestore";
 import { firebaseEnabled } from "@/lib/env";
 
 const ALLOWED_EXTENSIONS = [".txt", ".csv"];
 const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
 
+interface DNAResult {
+  id: string;
+  fileName?: string;
+  size?: number;
+  fileSize?: number;
+  uploadedAt?: string;
+  status: string;
+  ethnicity?: any;
+  error?: string;
+  totalSnps?: number;
+  sampleSnps?: any[];
+}
+
 export default function CloudProcessingPage() {
   const { user } = useAuth();
-  const [results, setResults] = useState<Array<DNAProcessingResult & { id: string }>>([]);
+  const [results, setResults] = useState<DNAResult[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   useEffect(() => {
-    if (!user || !firebaseEnabled) return;
+    if (!user || !user.id || !firebaseEnabled) return;
 
-    const unsubscribe = onDNAProcessingResults(user.id, (data) => {
-      setResults(data.sort((a, b) => {
-        const aTime = a.processedAt || "";
-        const bTime = b.processedAt || "";
-        return bTime.localeCompare(aTime);
-      }));
+    const db = getFirestoreDb();
+    if (!db) return;
+
+    const resultsRef = collection(db, "users", user.id, "dna_results");
+    const q = query(resultsRef, orderBy("uploadedAt", "desc"));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as any[];
+      setResults(data);
     });
 
     return () => unsubscribe();
@@ -57,18 +77,18 @@ export default function CloudProcessingPage() {
   };
 
   const handleUpload = async () => {
-    if (!user || !selectedFile || !firebaseEnabled) return;
+    if (!user || !user.id || !selectedFile || !firebaseEnabled) return;
 
     setError(null);
     setUploading(true);
     setUploadProgress(0);
 
     try {
-      const result = await uploadDNAFile(user.id, selectedFile, (progress) => {
+      const uploadId = await uploadDNAToCloud(selectedFile, user.id, (progress) => {
         setUploadProgress(Math.round(progress));
       });
 
-      console.log("File uploaded successfully:", result);
+      console.log("File uploaded successfully:", uploadId);
       setSelectedFile(null);
       setUploadProgress(0);
 
@@ -184,12 +204,12 @@ export default function CloudProcessingPage() {
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div>
-                    <CardTitle className="text-lg">{result.fileName}</CardTitle>
+                    <CardTitle className="text-lg">{result.fileName || "Unknown file"}</CardTitle>
                     <CardDescription>
-                      File ID: {result.id} • {(result.fileSize / 1024 / 1024).toFixed(2)} MB
+                      File ID: {result.id} • {result.fileSize ? (result.fileSize / 1024 / 1024).toFixed(2) : "0"} MB
                     </CardDescription>
                   </div>
-                  <StatusBadge status={result.status} />
+                  <StatusBadge status={result.status as "processing" | "completed" | "failed"} />
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -205,12 +225,12 @@ export default function CloudProcessingPage() {
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
                         <span className="text-muted-foreground">Total SNPs:</span>
-                        <p className="font-semibold">{result.totalSnps.toLocaleString()}</p>
+                        <p className="font-semibold">{result.totalSnps?.toLocaleString() || "0"}</p>
                       </div>
                       <div>
                         <span className="text-muted-foreground">Processed:</span>
                         <p className="font-semibold">
-                          {result.processedAt ? new Date(result.processedAt).toLocaleString() : "N/A"}
+                          {result.uploadedAt ? new Date(result.uploadedAt).toLocaleString() : "N/A"}
                         </p>
                       </div>
                     </div>
