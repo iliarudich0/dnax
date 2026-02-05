@@ -33,12 +33,17 @@ export default function EthnicityPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) {
+    if (!user || !user.id) {
       setLoading(false);
       return;
     }
 
-    const resultsRef = collection(db, "users", user.uid, "dna_results");
+    if (!db) {
+      setLoading(false);
+      return;
+    }
+
+    const resultsRef = collection(db, "users", user.id, "dna_results");
     const q = query(
       resultsRef,
       where("status", "==", "completed"),

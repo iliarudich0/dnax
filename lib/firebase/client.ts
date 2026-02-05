@@ -1,4 +1,5 @@
 import { getApps, initializeApp, type FirebaseApp } from "firebase/app";
+import { getFirestore, type Firestore } from "firebase/firestore";
 import { env, firebaseEnabled } from "@/lib/env";
 
 const firebaseConfig = firebaseEnabled
@@ -21,3 +22,12 @@ export function getFirebaseApp(): FirebaseApp | null {
   }
   return getApps()[0]!;
 }
+
+export function getFirestoreDb(): Firestore | null {
+  const app = getFirebaseApp();
+  if (!app) return null;
+  return getFirestore(app);
+}
+
+// Export db instance for convenience
+export const db = getFirestoreDb();
