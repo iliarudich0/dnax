@@ -41,20 +41,39 @@ export default function CloudProcessingPage() {
     if (!user || !user.id || !firebaseEnabled) return;
 
     const db = getFirestoreDb();
-    if (!db) return;
+    if (!db) {
+      console.error("Firestore not initialized");
+      return;
+    }
+
+    console.log("Setting up real-time listener for user:", user.id);
 
     const resultsRef = collection(db, "users", user.id, "dna_results");
     const q = query(resultsRef, orderBy("uploadedAt", "desc"));
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as any[];
-      setResults(data);
-    });
+    const unsubscribe = onSnapshot(q, 
+      (snapshot) => {
+        console.log("Received", snapshot.docs.length, "DNA results");
+        const data = snapshot.docs.map((doc) => {
+          const docData = doc.data();
+          console.log("Result:", doc.id, "status:", docData.status);
+          return {
+            id: doc.id,
+            ...docData,
+          };
+        }) as any[];
+        setResults(data);
+      },
+      (error) => {
+        console.error("Error listening to DNA results:", error);
+        setError("Failed to load results: " + error.message);
+      }
+    );
 
-    return () => unsubscribe();
+    return () => {
+      console.log("Cleaning up listener");
+      unsubscribe();
+    };
   }, [user]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -84,11 +103,18 @@ export default function CloudProcessingPage() {
     setUploadProgress(0);
 
     try {
+      console.log("Starting upload for user:", user.id);
+      console.log("File:", selectedFile.name, "Size:", (selectedFile.size / 1024 / 1024).toFixed(2), "MB");
+      
       const uploadId = await uploadDNAToCloud(selectedFile, user.id, (progress) => {
+        console.log("Upload progress:", progress + "%");
         setUploadProgress(Math.round(progress));
       });
 
-      console.log("File uploaded successfully:", uploadId);
+      console.log("Upload complete! ID:", uploadId);
+      console.log("Cloud Function will process the file in 1-2 minutes.");
+      console.log("Watch the Processing Results section below for status updates.");
+      
       setSelectedFile(null);
       setUploadProgress(0);
 
@@ -184,6 +210,20 @@ export default function CloudProcessingPage() {
           <p className="text-xs text-muted-foreground">
             Files are processed automatically by Cloud Functions. Results typically appear within 1-2 minutes.
           </p>
+
+          {/* Debug Info */}
+          <Alert>
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              <div className="space-y-1 text-xs">
+                <p><strong>How it works:</strong></p>
+                <p>1. File uploads to Firebase Storage at <code>users/{'{userId}'}/raw/{'{filename}'}</code></p>
+                <p>2. Cloud Function automatically triggers and processes your DNA</p>
+                <p>3. Results appear below with ethnicity estimates</p>
+                <p className="mt-2"><strong>Tip:</strong> Open browser console (F12) to see detailed logs</p>
+              </div>
+            </AlertDescription>
+          </Alert>
         </CardContent>
       </Card>
 
@@ -222,13 +262,22 @@ export default function CloudProcessingPage() {
                     <Loader2 className="h-4 w-4 animate-spin" />
                     <AlertDescription>
                       <div className="space-y-2">
-                        <p className="font-medium">Processing your DNA file...</p>
+                        <p className="font-medium">⚙️ Processing your DNA file...</p>
                         <p className="text-sm">Cloud Function is analyzing your data. This typically takes 1-2 minutes.</p>
+                        {result.uploadedAt && (
+                          <p className="text-xs text-muted-foreground">
+                            Started: {new Date(result.uploadedAt).toLocaleTimeString()} 
+                            ({Math.round((Date.now() - new Date(result.uploadedAt).getTime()) / 1000)}s ago)
+                          </p>
+                        )}
                         <div className="flex items-center gap-2 text-xs">
-                          <div className="h-1 w-full bg-secondary rounded-full overflow-hidden">
+                          <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
                             <div className="h-full bg-primary animate-pulse" style={{ width: "70%" }} />
                           </div>
                         </div>
+                        <p className="text-xs text-muted-foreground italic">
+                          💡 Check Firebase Console &gt; Functions logs if this takes longer than 3 minutes
+                        </p>
                       </div>
                     </AlertDescription>
                   </Alert>
@@ -238,8 +287,15 @@ export default function CloudProcessingPage() {
                   <Alert>
                     <UploadCloud className="h-4 w-4 animate-pulse" />
                     <AlertDescription>
-                      <p className="font-medium">Uploading to Firebase Storage...</p>
-                      <p className="text-sm">Your file is being uploaded and will be processed automatically.</p>
+                      <div className="space-y-1">
+                        <p className="font-medium">📤 Uploading to Firebase Storage...</p>
+                        <p className="text-sm">Your file is being uploaded and will be processed automatically.</p>
+                        {result.uploadedAt && (
+                          <p className="text-xs text-muted-foreground">
+                            Started: {new Date(result.uploadedAt).toLocaleTimeString()}
+                          </p>
+                        )}
+                      </div>
                     </AlertDescription>
                   </Alert>
                 )}

@@ -47,22 +47,48 @@ export async function uploadDNAToCloud(
   const storageRef = ref(storage, storagePath);
 
   try {
-    // Upload file to Firebase Storage
-    onProgress?.(50);
-    await uploadBytes(storageRef, file);
-    onProgress?.(100);
-
-    // Create initial Firestore document
+    // Create initial Firestore document with 'uploading' status
     await setDoc(doc(db, "users", userId, "dna_results", uploadId), {
       fileName: file.name,
+      originalName: file.name,
       size: file.size,
       uploadedAt: new Date().toISOString(),
       status: "uploading",
       storagePath,
     });
 
+    // Upload file to Firebase Storage
+    onProgress?.(50);
+    await uploadBytes(storageRef, file);
+    onProgress?.(100);
+
+    // Update status to 'processing' - Cloud Function will take over
+    await setDoc(doc(db, "users", userId, "dna_results", uploadId), {
+      fileName: file.name,
+      originalName: file.name,
+      size: file.size,
+      fileSize: file.size,
+      uploadedAt: new Date().toISOString(),
+      status: "processing",
+      storagePath,
+    });
+
+    console.log(`File uploaded successfully to ${storagePath}. Cloud Function will process it.`);
+
     return uploadId;
   } catch (error) {
+    // Update status to failed if upload fails
+    try {
+      await setDoc(doc(db, "users", userId, "dna_results", uploadId), {
+        fileName: file.name,
+        size: file.size,
+        uploadedAt: new Date().toISOString(),
+        status: "failed",
+        error: error instanceof Error ? error.message : "Upload failed",
+      });
+    } catch (e) {
+      console.error("Failed to update error status:", e);
+    }
     throw new Error(
       error instanceof Error ? error.message : "Upload failed"
     );
