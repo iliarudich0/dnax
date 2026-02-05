@@ -307,7 +307,19 @@ export default function CloudProcessingPage() {
 
                 {result.status === "completed" && (
                   <div className="space-y-4">
-                    {result.ethnicity && (
+                    {result.totalSnps === 0 && (
+                      <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertDescription>
+                          <strong>No SNPs found in file.</strong> Please check that your file is in the correct format:
+                          <br />• Tab-delimited: <code>rsid chromosome position genotype</code>
+                          <br />• CSV format: <code>RSID,CHROMOSOME,POSITION,RESULT</code>
+                          <br />• Try uploading <code>sample-dna.txt</code> or <code>sample-dna.csv</code> from the project
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                    
+                    {result.ethnicity && (result.totalSnps ?? 0) > 0 && (
                       <div className="space-y-3">
                         <h4 className="font-semibold text-lg">Ethnicity Estimate</h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -336,7 +348,9 @@ export default function CloudProcessingPage() {
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
                         <span className="text-muted-foreground">Total SNPs:</span>
-                        <p className="font-semibold">{result.totalSnps?.toLocaleString() || "0"}</p>
+                        <p className={`font-semibold ${result.totalSnps === 0 ? 'text-red-500' : ''}`}>
+                          {result.totalSnps?.toLocaleString() || "0"}
+                        </p>
                       </div>
                       <div>
                         <span className="text-muted-foreground">Processed:</span>

@@ -1,32 +1,12 @@
-# Sample DNA file for testing DNAx
-# This file contains ancestry-informative markers (AIMs)
-# Format: rsid	chromosome	position	genotype
-
-# Skin pigmentation - European marker
+# Sample DNA file for DNAx testing
 rs1426654	15	48426484	AA
-
-# Hair thickness - East Asian marker
 rs3827760	2	109513601	GG
-
-# Lactose tolerance - European marker
 rs4988235	2	136608646	TT
-
-# Eye color - European blue eyes marker
 rs12913832	15	28365618	GG
-
-# Malaria resistance - African marker
 rs2814778	1	159174683	CC
-
-# Skin/eye color marker
 rs1800407	15	28230318	CT
-
-# Earwax type - East Asian dry earwax marker
 rs17822931	16	48258198	TT
-
-# Alcohol metabolism - East Asian variant
 rs1229984	4	100239319	TC
-
-# Additional test SNPs
 rs1234567	1	12345678	AG
 rs9876543	2	98765432	CT
 rs5555555	3	55555555	GG

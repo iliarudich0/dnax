@@ -75,12 +75,17 @@ export const processDNAFile = functions.storage.onObjectFinalized({
       lineCount++;
 
       // Skip comment lines and empty lines
-      if (line.startsWith("#") || line.trim() === "" || line.startsWith("RSID")) {
+      if (line.startsWith("#") || line.trim() === "" || line.startsWith("RSID") || line.startsWith("rsid")) {
         // Check if CSV on first data line
         if (lineCount < 10 && line.includes(",")) {
           isCSV = true;
         }
         continue;
+      }
+
+      // Log first few lines for debugging
+      if (lineCount <= 5) {
+        functions.logger.info(`Line ${lineCount}: "${line}"`);
       }
 
       // Parse SNP line - support both CSV and space-delimited
@@ -111,6 +116,12 @@ export const processDNAFile = functions.storage.onObjectFinalized({
       if (lineCount % 10000 === 0) {
         functions.logger.info(`Processed ${lineCount} lines, ${totalSnps} SNPs found`);
       }
+    }
+
+    functions.logger.info(`File parsing completed: ${totalSnps} SNPs found, ${snps.length} stored`);
+    
+    if (totalSnps === 0) {
+      functions.logger.warn("No SNPs found in file. File format may be incorrect.");
     }
 
     // Calculate ethnicity from SNPs
