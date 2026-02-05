@@ -80,32 +80,41 @@ export const processDNAFile = functions.storage.onObjectFinalized({
     let totalSnps = 0;
     let lineCount = 0;
     const maxSampleSnps = 100; // Store first 100 SNPs as sample
+    let isCSV = fileName.toLowerCase().endsWith(".csv");
 
     for await (const line of rl) {
       lineCount++;
 
       // Skip comment lines and empty lines
-      if (line.startsWith("#") || line.trim() === "") {
+      if (line.startsWith("#") || line.trim() === "" || line.startsWith("RSID")) {
+        // Check if CSV on first data line
+        if (lineCount < 10 && line.includes(",")) {
+          isCSV = true;
+        }
         continue;
       }
 
-      // Parse SNP line (format: rsid chromosome position genotype)
-      // Example: rs4477212 1 82154 AA
-      const parts = line.trim().split(/\s+/);
+      // Parse SNP line - support both CSV and space-delimited
+      // CSV format: RSID,CHROMOSOME,POSITION,RESULT
+      // Space format: rsid chromosome position genotype
+      const parts = isCSV ? line.trim().split(",") : line.trim().split(/\s+/);
 
       if (parts.length >= 4) {
         const snp: SNPRecord = {
-          rsid: parts[0],
-          chromosome: parts[1],
-          position: parts[2],
-          genotype: parts[3],
+          rsid: parts[0].trim(),
+          chromosome: parts[1].trim(),
+          position: parts[2].trim(),
+          genotype: parts[3].trim(),
         };
 
-        totalSnps++;
+        // Only count if it looks like a valid SNP
+        if (snp.rsid.startsWith("rs") || snp.rsid.startsWith("i")) {
+          totalSnps++;
 
-        // Store only first 100 SNPs as sample
-        if (snps.length < maxSampleSnps) {
-          snps.push(snp);
+          // Store only first 100 SNPs as sample
+          if (snps.length < maxSampleSnps) {
+            snps.push(snp);
+          }
         }
       }
 
