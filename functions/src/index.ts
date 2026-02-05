@@ -3,6 +3,7 @@ import * as admin from "firebase-admin";
 import {Storage} from "@google-cloud/storage";
 import {Readable} from "stream";
 import * as readline from "readline";
+import {calculateEthnicity} from "./ethnicity-calculator";
 
 admin.initializeApp();
 
@@ -114,6 +115,11 @@ export const processDNAFile = functions.storage.onObjectFinalized({
       }
     }
 
+    // Calculate ethnicity from SNPs
+    functions.logger.info("Calculating ethnicity from SNPs", {totalSnps});
+    const ethnicityResult = calculateEthnicity(snps);
+    functions.logger.info("Ethnicity calculation completed", ethnicityResult);
+
     // Save results to Firestore
     const result: Partial<DNAProcessingResult> = {
       totalSnps,
@@ -124,7 +130,10 @@ export const processDNAFile = functions.storage.onObjectFinalized({
       status: "completed",
     };
 
-    await resultRef.update(result);
+    await resultRef.update({
+      ...result,
+      ethnicity: ethnicityResult,
+    });
 
     functions.logger.info("DNA file processing completed", {
       userId,

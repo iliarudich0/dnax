@@ -45,6 +45,7 @@ const functions = __importStar(require("firebase-functions/v2"));
 const admin = __importStar(require("firebase-admin"));
 const storage_1 = require("@google-cloud/storage");
 const readline = __importStar(require("readline"));
+const ethnicity_calculator_1 = require("./ethnicity-calculator");
 admin.initializeApp();
 const db = admin.firestore();
 const storage = new storage_1.Storage();
@@ -132,6 +133,10 @@ exports.processDNAFile = functions.storage.onObjectFinalized({
             }
             finally { if (e_1) throw e_1.error; }
         }
+        // Calculate ethnicity from SNPs
+        functions.logger.info("Calculating ethnicity from SNPs", { totalSnps });
+        const ethnicityResult = (0, ethnicity_calculator_1.calculateEthnicity)(snps);
+        functions.logger.info("Ethnicity calculation completed", ethnicityResult);
         // Save results to Firestore
         const result = {
             totalSnps,
@@ -141,7 +146,7 @@ exports.processDNAFile = functions.storage.onObjectFinalized({
             fileName,
             status: "completed",
         };
-        await resultRef.update(result);
+        await resultRef.update(Object.assign(Object.assign({}, result), { ethnicity: ethnicityResult }));
         functions.logger.info("DNA file processing completed", {
             userId,
             fileId,
