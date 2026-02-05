@@ -189,13 +189,17 @@ export default function CloudProcessingPage() {
 
       {/* Results Section */}
       <div className="space-y-4">
-        <h2 className="text-2xl font-semibold">Processing Results</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-semibold">Processing Results</h2>
+          <Badge variant="secondary">{results.length} file{results.length !== 1 ? 's' : ''}</Badge>
+        </div>
 
         {results.length === 0 ? (
           <Card>
             <CardContent className="pt-6 text-center text-muted-foreground">
               <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No DNA files processed yet. Upload a file above to get started.</p>
+              <p className="text-lg font-medium mb-2">No DNA files uploaded yet</p>
+              <p className="text-sm">Upload a file above to start processing</p>
             </CardContent>
           </Card>
         ) : (
@@ -214,10 +218,30 @@ export default function CloudProcessingPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {result.status === "processing" && (
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Alert>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>Processing file... This may take 1-2 minutes.</span>
-                  </div>
+                    <AlertDescription>
+                      <div className="space-y-2">
+                        <p className="font-medium">Processing your DNA file...</p>
+                        <p className="text-sm">Cloud Function is analyzing your data. This typically takes 1-2 minutes.</p>
+                        <div className="flex items-center gap-2 text-xs">
+                          <div className="h-1 w-full bg-secondary rounded-full overflow-hidden">
+                            <div className="h-full bg-primary animate-pulse" style={{ width: "70%" }} />
+                          </div>
+                        </div>
+                      </div>
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                {result.status === "uploading" && (
+                  <Alert>
+                    <UploadCloud className="h-4 w-4 animate-pulse" />
+                    <AlertDescription>
+                      <p className="font-medium">Uploading to Firebase Storage...</p>
+                      <p className="text-sm">Your file is being uploaded and will be processed automatically.</p>
+                    </AlertDescription>
+                  </Alert>
                 )}
 
                 {result.status === "completed" && (

@@ -135,6 +135,16 @@ export default function GEDCOMPage() {
           Upload your genealogical data in GEDCOM format (.ged files). GEDCOM files contain family tree information,
           relationships, and can include references to photos and documents.
         </p>
+        {uploads.some(u => u.status === "completed") && (
+          <div>
+            <Button asChild variant="outline">
+              <a href="/dashboard/gedcom/tree">
+                <Users className="mr-2 h-4 w-4" />
+                View Family Tree
+              </a>
+            </Button>
+          </div>
+        )}
       </div>
 
       <Card>
