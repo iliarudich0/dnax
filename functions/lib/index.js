@@ -94,46 +94,81 @@ exports.processDNAFile = functions.storage.onObjectFinalized({
         let lineCount = 0;
         const maxSampleSnps = 1000; // Store more SNPs for better ethnicity calculation
         let isCSV = fileName.toLowerCase().endsWith(".csv");
+        let headerSkipped = false;
         try {
             for (var _d = true, rl_1 = __asyncValues(rl), rl_1_1; rl_1_1 = await rl_1.next(), _a = rl_1_1.done, !_a; _d = true) {
                 _c = rl_1_1.value;
                 _d = false;
                 const line = _c;
                 lineCount++;
-                // Skip comment lines and empty lines
-                if (line.startsWith("#") || line.trim() === "" || line.startsWith("RSID") || line.startsWith("rsid")) {
-                    // Check if CSV on first data line
-                    if (lineCount < 10 && line.includes(",")) {
-                        isCSV = true;
-                    }
+                // Trim the line
+                const trimmedLine = line.trim();
+                // Skip empty lines
+                if (trimmedLine === "") {
                     continue;
                 }
-                // Log first few lines for debugging
-                if (lineCount <= 5) {
-                    functions.logger.info(`Line ${lineCount}: "${line}"`);
+                // Skip comment lines
+                if (trimmedLine.startsWith("#") || trimmedLine.startsWith("//")) {
+                    continue;
                 }
-                // Parse SNP line - support both CSV and space-delimited
+                // Auto-detect CSV format
+                if (lineCount < 10 && trimmedLine.includes(",") && !trimmedLine.includes("\t")) {
+                    isCSV = true;
+                }
+                // Skip header line (first non-comment line that contains column names)
+                if (!headerSkipped && (trimmedLine.match(/^(RSID|rsid|SNP)/i) ||
+                    trimmedLine.match(/chromosome/i) ||
+                    trimmedLine.match(/position/i))) {
+                    headerSkipped = true;
+                    functions.logger.info(`Skipping header: "${trimmedLine}"`);
+                    continue;
+                }
+                // Log first few data lines for debugging
+                if (lineCount <= 10) {
+                    functions.logger.info(`Line ${lineCount} (CSV=${isCSV}): "${trimmedLine.substring(0, 100)}"`);
+                }
+                // Parse SNP line - support both CSV and tab/space-delimited
                 // CSV format: RSID,CHROMOSOME,POSITION,RESULT
+                // Tab format: rsid\tchromosome\tposition\tgenotype
                 // Space format: rsid chromosome position genotype
-                const parts = isCSV ? line.trim().split(",") : line.trim().split(/\s+/);
+                let parts;
+                if (isCSV) {
+                    // Handle CSV with possible quotes
+                    parts = trimmedLine.split(",").map(p => p.replace(/^["']|["']$/g, "").trim());
+                }
+                else if (trimmedLine.includes("\t")) {
+                    parts = trimmedLine.split("\t").map(p => p.trim());
+                }
+                else {
+                    parts = trimmedLine.split(/\s+/);
+                }
+                // Need at least 4 columns: rsid, chromosome, position, genotype
                 if (parts.length >= 4) {
-                    const snp = {
-                        rsid: parts[0].trim(),
-                        chromosome: parts[1].trim(),
-                        position: parts[2].trim(),
-                        genotype: parts[3].trim(),
-                    };
-                    // Only count if it looks like a valid SNP
-                    if (snp.rsid.startsWith("rs") || snp.rsid.startsWith("i")) {
+                    const rsid = parts[0].trim();
+                    const chromosome = parts[1].trim();
+                    const position = parts[2].trim();
+                    const genotype = parts[3].trim();
+                    // Only count if it looks like a valid SNP (rsid starts with rs or i)
+                    // and chromosome is numeric or X/Y/MT
+                    if ((rsid.startsWith("rs") || rsid.startsWith("i")) &&
+                        (chromosome.match(/^(\d+|X|Y|MT|M)$/i) || chromosome.match(/^\d+$/)) &&
+                        position.match(/^\d+$/) &&
+                        genotype.match(/^[ACGT-]{1,2}$/i)) {
+                        const snp = {
+                            rsid,
+                            chromosome,
+                            position,
+                            genotype: genotype.toUpperCase(),
+                        };
                         totalSnps++;
-                        // Store only first 100 SNPs as sample
+                        // Store first N SNPs for ethnicity calculation
                         if (snps.length < maxSampleSnps) {
                             snps.push(snp);
                         }
                     }
                 }
-                // Log progress every 10000 lines
-                if (lineCount % 10000 === 0) {
+                // Log progress every 50000 lines for large files
+                if (lineCount % 50000 === 0) {
                     functions.logger.info(`Processed ${lineCount} lines, ${totalSnps} SNPs found`);
                 }
             }
