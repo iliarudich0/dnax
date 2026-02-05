@@ -29,10 +29,10 @@ export const metadata: Metadata = {
     siteName: "TikDNA",
     images: [
       {
-        url: "https://images.unsplash.com/photo-1489278353717-f64c6ee8a4d2?auto=format&fit=crop&w=1400&q=80",
-        width: 1400,
-        height: 788,
-        alt: "TikDNA preview",
+        url: "https://iliarudich0.github.io/dnax/tikdna-logo.png",
+        width: 512,
+        height: 512,
+        alt: "TikDNA Logo",
       },
     ],
     type: "website",

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,7 +23,7 @@ export function Navbar() {
     <header className="sticky top-0 z-40 w-full border-b border-border/70 bg-white/80 backdrop-blur-xl">
       <div className="container flex h-16 items-center justify-between gap-4">
         <Link href="/" className="flex items-center gap-3 text-lg font-semibold">
-          <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-foreground text-background">TL</span>
+          <Image src="/dnax/tikdna-logo.png" alt="TikDNA Logo" width={36} height={36} className="h-9 w-9 object-contain" />
           <div className="flex flex-col leading-tight">
             <span>TikDNA</span>
             <span className="text-xs text-muted-foreground">Educational genetics</span>
